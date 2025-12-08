@@ -1,0 +1,34 @@
+﻿@{
+    ViewData["Title"] = "AI Fitness Öneri";
+}
+
+<h2 class="mb-4">AI Fitness Öneri Sistemi</h2>
+<hr>
+
+<form class="row g-3">
+
+    <div class="col-12">
+        <label class="form-label">Fitness Hedefiniz</label>
+        <select class="form-select">
+            <option>Kilo verme</option>
+            <option>Kilo alma</option>
+            <option>Kas geliştirme</option>
+            <option>Esneklik artırma</option>
+        </select>
+    </div>
+
+    <div class="col-12">
+        <label class="form-label">Günlük Spor Süresi</label>
+        <input type="number" class="form-control" placeholder="Dakika cinsinden">
+    </div>
+
+    <div class="col-12">
+        <label class="form-label">Özel Notlar</label>
+        <textarea class="form-control" rows="4"></textarea>
+    </div>
+
+    <div class="col-12">
+        <button class="btn btn-primary w-100">Öneri Al</button>
+    </div>
+
+</form>

@@ -1,0 +1,26 @@
+﻿@model List<Randevu>
+
+<h2>Randevularım</h2>
+<hr />
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Hizmet</th>
+            <th>Antrenör</th>
+            <th>Tarih</th>
+            <th>Saat</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.Hizmet.Ad</td>
+                <td>@r.Antrenor.AdSoyad</td>
+                <td>@r.Tarih.ToShortDateString()</td>
+                <td>@r.Saat</td>
+            </tr>
+        }
+    </tbody>
+</table>

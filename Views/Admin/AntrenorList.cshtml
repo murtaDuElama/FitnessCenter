@@ -1,0 +1,43 @@
+﻿@model List<Antrenor>
+
+<h2 class="mb-4">Antrenör Yönetimi</h2>
+<hr />
+
+<a href="/Antrenor/Create" class="btn btn-primary mb-3">Yeni Antrenör Ekle</a>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Fotoğraf</th>
+            <th>Ad Soyad</th>
+            <th>Uzmanlık</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var a in Model)
+        {
+            <tr>
+                <td>
+                    @if (!string.IsNullOrEmpty(a.FotografUrl))
+                    {
+                        <img src="@a.FotografUrl" class="rounded-circle" width="60" height="60" />
+                    }
+                    else
+                    {
+                        <span>Yok</span>
+                    }
+                </td>
+
+                <td>@a.AdSoyad</td>
+                <td>@a.Uzmanlik</td>
+
+                <td>
+                    <a href="/Antrenor/Edit/@a.Id" class="btn btn-warning btn-sm">Düzenle</a>
+                    <a href="/Antrenor/Delete/@a.Id" class="btn btn-danger btn-sm">Sil</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

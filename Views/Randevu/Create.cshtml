@@ -1,0 +1,54 @@
+﻿@model Randevu
+
+<h2>Randevu Al</h2>
+<hr>
+
+<form method="post">
+
+    <div class="row">
+
+        <div class="col-md-6 mb-3">
+            <label>Ad Soyad</label>
+            <input asp-for="AdSoyad" class="form-control" />
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label>Telefon</label>
+            <input asp-for="Telefon" class="form-control" />
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label>Hizmet</label>
+            <select asp-for="HizmetId" class="form-select">
+                @foreach (var h in ViewBag.Hizmetler)
+                {
+                    <option value="@h.Id">@h.Ad</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label>Antrenör</label>
+            <select asp-for="AntrenorId" class="form-select">
+                @foreach (var a in ViewBag.Antrenorler)
+                {
+                    <option value="@a.Id">@a.AdSoyad</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label>Tarih</label>
+            <input asp-for="Tarih" type="date" class="form-control" />
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label>Saat</label>
+            <input asp-for="Saat" type="time" class="form-control" />
+        </div>
+
+    </div>
+
+    <button class="btn btn-primary w-100 mt-3">Randevu Oluştur</button>
+
+</form>

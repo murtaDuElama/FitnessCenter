@@ -1,0 +1,97 @@
+﻿@model AdminDashboardViewModel
+
+<h2 class="mb-4">Admin Paneli</h2>
+<hr />
+
+<div class="row mb-4">
+
+    <div class="col-md-4">
+        <div class="card p-3 shadow">
+            <h4>Toplam Hizmet</h4>
+            <p class="fs-3">@Model.HizmetSayisi</p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3 shadow">
+            <h4>Toplam Antrenör</h4>
+            <p class="fs-3">@Model.AntrenorSayisi</p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3 shadow">
+            <h4>Toplam Randevu</h4>
+            <p class="fs-3">@Model.RandevuSayisi</p>
+        </div>
+    </div>
+
+</div>
+
+<!-- Son eklenen Hizmetler -->
+<h3>Son Eklenen 5 Hizmet</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Ad</th>
+            <th>Süre</th>
+            <th>Ücret</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var h in Model.SonHizmetler)
+        {
+            <tr>
+                <td>@h.Ad</td>
+                <td>@h.Sure dk</td>
+                <td>@h.Ucret ₺</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Son Eklenen Antrenörler -->
+<h3 class="mt-5">Son Eklenen 5 Antrenör</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Ad Soyad</th>
+            <th>Uzmanlık</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var a in Model.SonAntrenorler)
+        {
+            <tr>
+                <td>@a.AdSoyad</td>
+                <td>@a.Uzmanlik</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Son Randevular -->
+<h3 class="mt-5">Son 5 Randevu</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Ad Soyad</th>
+            <th>Hizmet</th>
+            <th>Antrenör</th>
+            <th>Tarih</th>
+            <th>Saat</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model.SonRandevular)
+        {
+            <tr>
+                <td>@r.AdSoyad</td>
+                <td>@r.Hizmet.Ad</td>
+                <td>@r.Antrenor.AdSoyad</td>
+                <td>@r.Tarih.ToShortDateString()</td>
+                <td>@r.Saat</td>
+            </tr>
+        }
+    </tbody>
+</table>

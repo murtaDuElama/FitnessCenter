@@ -1,0 +1,12 @@
+﻿@model RegisterViewModel
+
+<form asp-action="Register" method="post">
+
+    <input asp-for="FullName" placeholder="Ad Soyad" class="form-control" />
+    <input asp-for="Email" placeholder="Email" class="form-control" />
+    <input asp-for="Password" placeholder="Şifre" type="password" class="form-control" />
+    <input asp-for="ConfirmPassword" placeholder="Şifre Tekrar" type="password" class="form-control" />
+
+    <button type="submit" class="btn btn-primary">Kayıt Ol</button>
+
+</form>

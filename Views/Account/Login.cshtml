@@ -1,0 +1,12 @@
+﻿@model FitnessCenter.Models.ViewModels.LoginViewModel
+
+<form asp-action="Login" method="post">
+
+    <input asp-for="Email" placeholder="Email" class="form-control" />
+    <input asp-for="Password" placeholder="Şifre" type="password" class="form-control" />
+
+    <input asp-for="RememberMe" type="checkbox" />
+
+    <button type="submit" class="btn btn-primary">Giriş Yap</button>
+
+</form>

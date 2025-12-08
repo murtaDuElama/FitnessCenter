@@ -1,0 +1,31 @@
+﻿@model List<Randevu>
+
+<h2 class="mb-4">Randevu Yönetimi</h2>
+<hr />
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Ad Soyad</th>
+            <th>Telefon</th>
+            <th>Hizmet</th>
+            <th>Antrenör</th>
+            <th>Tarih</th>
+            <th>Saat</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.AdSoyad</td>
+                <td>@r.Telefon</td>
+                <td>@r.Hizmet.Ad</td>
+                <td>@r.Antrenor.AdSoyad</td>
+                <td>@r.Tarih.ToShortDateString()</td>
+                <td>@r.Saat</td>
+            </tr>
+        }
+    </tbody>
+</table>
