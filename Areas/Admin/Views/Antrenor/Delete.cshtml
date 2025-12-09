@@ -1,0 +1,12 @@
+﻿@model Antrenor
+
+<h2>Antrenör Sil</h2>
+<div class="alert alert-danger">
+    <strong>Dikkat!</strong> @Model.AdSoyad isimli antrenörü silmek üzeresiniz. Bu işlem geri alınamaz.
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Evet, Sil</button>
+    <a href="/Admin/Antrenor/Index" class="btn btn-secondary">İptal</a>
+</form>

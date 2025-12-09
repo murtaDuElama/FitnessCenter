@@ -1,0 +1,56 @@
+﻿@model List<Randevu>
+
+<h2 class="mb-4">Randevu Yönetimi</h2>
+<hr />
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Ad Soyad</th>
+            <th>Telefon</th>
+            <th>Hizmet</th>
+            <th>Antrenör</th>
+            <th>Tarih/Saat</th>
+            <th>Durum</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.AdSoyad</td>
+                <td>@r.Telefon</td>
+                <td>@r.Hizmet?.Ad</td>
+                <td>@r.Antrenor?.AdSoyad</td>
+                <td>@r.Tarih.ToShortDateString() - @r.Saat</td>
+                <td>
+                    @if (r.Onaylandi)
+                    {
+                        <span class="badge bg-success">Onaylandı</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">Bekliyor</span>
+                    }
+                </td>
+                <td>
+                    <div class="d-flex gap-2">
+                        @if (!r.Onaylandi)
+                        {
+                            <form asp-action="Onayla" asp-controller="Randevu" asp-area="Admin" method="post">
+                                <input type="hidden" name="id" value="@r.Id" />
+                                <button type="submit" class="btn btn-success btn-sm">Onayla</button>
+                            </form>
+                        }
+
+                        <form asp-action="Sil" asp-controller="Randevu" asp-area="Admin" method="post" onsubmit="return confirm('Silmek istediğine emin misin?');">
+                            <input type="hidden" name="id" value="@r.Id" />
+                            <button type="submit" class="btn btn-danger btn-sm">Sil</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

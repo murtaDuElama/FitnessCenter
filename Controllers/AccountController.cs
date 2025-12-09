@@ -3,88 +3,99 @@ using FitnessCenter.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-public class AccountController : Controller
+namespace FitnessCenter.Controllers
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
-
-    public AccountController(UserManager<ApplicationUser> userManager,
-                             SignInManager<ApplicationUser> signInManager)
+    public class AccountController : Controller
     {
-        _userManager = userManager;
-        _signInManager = signInManager;
-    }
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-    // GET: /Account/Register
-    [HttpGet]
-    public IActionResult Register()
-    {
-        return View();
-    }
-
-    // POST: /Account/Register
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register(RegisterViewModel model)
-    {
-        if (!ModelState.IsValid)
-            return View(model);
-
-        var user = new ApplicationUser
+        public AccountController(UserManager<ApplicationUser> userManager,
+                                 SignInManager<ApplicationUser> signInManager)
         {
-            FullName = model.FullName,
-            Email = model.Email,
-            UserName = model.Email
-        };
-
-        var result = await _userManager.CreateAsync(user, model.Password);
-
-        if (result.Succeeded)
-        {
-            await _signInManager.SignInAsync(user, false);
-            return RedirectToAction("Index", "Home");
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
-        foreach (var error in result.Errors)
-            ModelState.AddModelError("", error.Description);
+        // GET: /Account/Register
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
 
-        return View(model);
-    }
+        // POST: /Account/Register
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
 
-    // GET: /Account/Login
-    [HttpGet]
-    public IActionResult Login()
-    {
-        return View();
-    }
+            var user = new ApplicationUser
+            {
+                AdSoyad = model.AdSoyad, // Düzeltildi: FullName -> AdSoyad
+                Email = model.Email,
+                UserName = model.Email
+            };
 
-    // POST: /Account/Login
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(LoginViewModel model)
-    {
-        if (!ModelState.IsValid)
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (result.Succeeded)
+            {
+                // ⭐ YENİ EKLEME: Kayıt olan herkese varsayılan "Uye" rolü verelim
+                await _userManager.AddToRoleAsync(user, "Uye");
+
+                await _signInManager.SignInAsync(user, false);
+                return RedirectToAction("Index", "Home");
+            }
+
+            foreach (var error in result.Errors)
+                ModelState.AddModelError("", error.Description);
+
             return View(model);
+        }
 
-        var result = await _signInManager.PasswordSignInAsync(
-            model.Email,
-            model.Password,
-            model.RememberMe,
-            lockoutOnFailure: false
-        );
+        // GET: /Account/Login
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
 
-        if (result.Succeeded)
-            return RedirectToAction("Index", "Home");
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
 
-        ModelState.AddModelError("", "Email veya şifre hatalı.");
-        return View(model);
-    }
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
 
-    // GET: /Account/Logout
-    [HttpGet]
-    public async Task<IActionResult> Logout()
-    {
-        await _signInManager.SignOutAsync();
-        return RedirectToAction("Login");
+            if (result.Succeeded)
+            {
+                // Giriş yapan kullanıcıyı bul
+                var user = await _userManager.FindByEmailAsync(model.Email);
+
+                // Kullanıcının "Admin" rolü olup olmadığını kontrol et
+                if (await _userManager.IsInRoleAsync(user, "Admin"))
+                {
+                    // Admin ise -> Admin Paneline git
+                    return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+                }
+
+                // Normal kullanıcı ise -> Anasayfaya git
+                return RedirectToAction("Index", "Home");
+            }
+
+            ModelState.AddModelError("", "Geçersiz email veya şifre.");
+            return View(model);
+        }
+
+        // GET: /Account/Logout
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Login");
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace FitnessCenter.Areas.Admin.Models
+﻿namespace FitnessCenter.Areas.Admin.Models.ViewModels
 {
     public class DashboardViewModel
     {

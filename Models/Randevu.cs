@@ -27,4 +27,5 @@ public class Randevu
 
     // ⭐ EKLEDİĞİMİZ TEK ŞEY BU
     public string UserId { get; set; }
+    public bool Onaylandi { get; set; } = false;
 }

@@ -1,6 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
-public class ApplicationUser : IdentityUser
+namespace FitnessCenter.Models
 {
-    public string FullName { get; set; }
+    public class ApplicationUser : IdentityUser
+    {
+        // SeedData.cs ve diğer yerlerde "AdSoyad" kullandığımız için burayı değiştiriyoruz
+        [StringLength(100)]
+        public string? AdSoyad { get; set; }
+    }
 }

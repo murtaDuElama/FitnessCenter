@@ -1,26 +1,64 @@
 ﻿@model List<Randevu>
 
-<h2>Randevularım</h2>
-<hr />
+@{
+    ViewData["Title"] = "Randevularım";
+}
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Hizmet</th>
-            <th>Antrenör</th>
-            <th>Tarih</th>
-            <th>Saat</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var r in Model)
-        {
-            <tr>
-                <td>@r.Hizmet.Ad</td>
-                <td>@r.Antrenor.AdSoyad</td>
-                <td>@r.Tarih.ToShortDateString()</td>
-                <td>@r.Saat</td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="container mt-4">
+    <h2 class="mb-4">Randevularım</h2>
+
+    @if (Model.Count == 0)
+    {
+        <div class="alert alert-info">
+            Henüz bir randevunuz bulunmamaktadır. <a href="/Randevu/Create" class="alert-link">Buradan randevu alabilirsiniz.</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Hizmet</th>
+                        <th>Antrenör</th>
+                        <th>Tarih</th>
+                        <th>Saat</th>
+                        <th>Durum</th>
+                        <th>İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model)
+                    {
+                        <tr>
+                            <td>@r.Hizmet?.Ad</td>
+                            <td>@r.Antrenor?.AdSoyad</td>
+                            <td>@r.Tarih.ToShortDateString()</td>
+                            <td>@r.Saat</td>
+                            <td>
+                                @if (r.Onaylandi)
+                                {
+                                    <span class="badge bg-success">Onaylandı</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Onay Bekliyor</span>
+                                }
+                            </td>
+                            <td>
+                                <form asp-action="IptalEt" method="post" onsubmit="return confirm('Randevuyu iptal etmek istediğinize emin misiniz?');">
+                                    <input type="hidden" name="id" value="@r.Id" />
+                                    <button type="submit" class="btn btn-danger btn-sm">İptal Et</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-3">
+            <a href="/Randevu/Create" class="btn btn-primary">Yeni Randevu Al</a>
+        </div>
+    }
+</div>

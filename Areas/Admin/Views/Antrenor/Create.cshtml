@@ -1,0 +1,22 @@
+﻿@model Antrenor
+
+<h2>Yeni Antrenör Ekle</h2>
+<hr />
+
+<form asp-action="Create" method="post" class="w-50">
+    <div class="mb-3">
+        <label class="form-label">Ad Soyad</label>
+        <input asp-for="AdSoyad" class="form-control" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Uzmanlık Alanı</label>
+        <input asp-for="Uzmanlik" class="form-control" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Fotoğraf URL (Opsiyonel)</label>
+        <input asp-for="FotografUrl" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Kaydet</button>
+    <a href="/Admin/Antrenor/Index" class="btn btn-secondary">İptal</a>
+</form>

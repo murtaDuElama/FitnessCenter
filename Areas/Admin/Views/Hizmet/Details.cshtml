@@ -1,0 +1,33 @@
+﻿@model Hizmet
+
+@{
+    ViewData["Title"] = "Hizmet Detayları";
+}
+
+<h2 class="mb-4">Hizmet Detayları</h2>
+<hr />
+
+<div class="card shadow-sm w-50">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">@Model.Ad</h5>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-4">Hizmet ID:</dt>
+            <dd class="col-sm-8">@Model.Id</dd>
+
+            <dt class="col-sm-4">Hizmet Adı:</dt>
+            <dd class="col-sm-8">@Model.Ad</dd>
+
+            <dt class="col-sm-4">Süre:</dt>
+            <dd class="col-sm-8">@Model.Sure Dakika</dd>
+
+            <dt class="col-sm-4">Ücret:</dt>
+            <dd class="col-sm-8">@Model.Ucret.ToString("C2")</dd>
+        </dl>
+    </div>
+    <div class="card-footer">
+        <a href="/Admin/Hizmet/Edit/@Model.Id" class="btn btn-warning">Düzenle</a>
+        <a href="/Admin/Hizmet/Index" class="btn btn-secondary">Listeye Dön</a>
+    </div>
+</div>

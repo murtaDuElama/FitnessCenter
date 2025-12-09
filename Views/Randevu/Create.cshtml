@@ -1,54 +1,88 @@
 ﻿@model Randevu
 
-<h2>Randevu Al</h2>
-<hr>
+@{
+    ViewData["Title"] = "Randevu Al";
+}
 
-<form method="post">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Yeni Randevu Oluştur</h3>
+                </div>
+                <div class="card-body">
 
-    <div class="row">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-        <div class="col-md-6 mb-3">
-            <label>Ad Soyad</label>
-            <input asp-for="AdSoyad" class="form-control" />
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="AdSoyad" class="form-label">Ad Soyad</label>
+                                <input asp-for="AdSoyad" class="form-control" placeholder="Adınız Soyadınız" required />
+                                <span asp-validation-for="AdSoyad" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Telefon" class="form-label">Telefon</label>
+                                <input asp-for="Telefon" class="form-control" placeholder="05XX..." required />
+                                <span asp-validation-for="Telefon" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="HizmetId" class="form-label">Hizmet Seçiniz</label>
+                                <select asp-for="HizmetId" class="form-select" asp-items="ViewBag.Hizmetler">
+                                    <option value="">-- Hizmet Seçin --</option>
+                                </select>
+                                <span asp-validation-for="HizmetId" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="AntrenorId" class="form-label">Antrenör Seçiniz</label>
+                                <select asp-for="AntrenorId" class="form-select" asp-items="ViewBag.Antrenorler">
+                                    <option value="">-- Antrenör Seçin --</option>
+                                </select>
+                                <span asp-validation-for="AntrenorId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Tarih" class="form-label">Tarih</label>
+                                <input asp-for="Tarih" type="date" class="form-control" required />
+                                <span asp-validation-for="Tarih" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Saat" class="form-label">Saat</label>
+                                <select asp-for="Saat" class="form-select" required>
+                                    <option value="">Seçiniz</option>
+                                    <option value="09:00">09:00</option>
+                                    <option value="10:00">10:00</option>
+                                    <option value="11:00">11:00</option>
+                                    <option value="13:00">13:00</option>
+                                    <option value="14:00">14:00</option>
+                                    <option value="15:00">15:00</option>
+                                    <option value="16:00">16:00</option>
+                                    <option value="17:00">17:00</option>
+                                    <option value="18:00">18:00</option>
+                                </select>
+                                <span asp-validation-for="Saat" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">Randevu Oluştur</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
         </div>
-
-        <div class="col-md-6 mb-3">
-            <label>Telefon</label>
-            <input asp-for="Telefon" class="form-control" />
-        </div>
-
-        <div class="col-md-6 mb-3">
-            <label>Hizmet</label>
-            <select asp-for="HizmetId" class="form-select">
-                @foreach (var h in ViewBag.Hizmetler)
-                {
-                    <option value="@h.Id">@h.Ad</option>
-                }
-            </select>
-        </div>
-
-        <div class="col-md-6 mb-3">
-            <label>Antrenör</label>
-            <select asp-for="AntrenorId" class="form-select">
-                @foreach (var a in ViewBag.Antrenorler)
-                {
-                    <option value="@a.Id">@a.AdSoyad</option>
-                }
-            </select>
-        </div>
-
-        <div class="col-md-6 mb-3">
-            <label>Tarih</label>
-            <input asp-for="Tarih" type="date" class="form-control" />
-        </div>
-
-        <div class="col-md-6 mb-3">
-            <label>Saat</label>
-            <input asp-for="Saat" type="time" class="form-control" />
-        </div>
-
     </div>
+</div>
 
-    <button class="btn btn-primary w-100 mt-3">Randevu Oluştur</button>
-
-</form>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

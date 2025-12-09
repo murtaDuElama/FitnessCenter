@@ -1,0 +1,31 @@
+﻿@model Hizmet
+
+@{
+    ViewData["Title"] = "Hizmet Sil";
+}
+
+<h2 class="mb-4 text-danger">Hizmet Sil</h2>
+
+<div class="alert alert-warning" role="alert">
+    <strong>Dikkat!</strong> Bu hizmeti silmek istediğinize emin misiniz? Bu işlem geri alınamaz.
+</div>
+
+<div class="card shadow-sm w-50">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-4">Hizmet Adı:</dt>
+            <dd class="col-sm-8">@Model.Ad</dd>
+
+            <dt class="col-sm-4">Süre:</dt>
+            <dd class="col-sm-8">@Model.Sure dk</dd>
+
+            <dt class="col-sm-4">Ücret:</dt>
+            <dd class="col-sm-8">@Model.Ucret ₺</dd>
+        </dl>
+
+        <form asp-action="DeleteConfirmed" method="post" asp-route-id="@Model.Id" class="mt-4">
+            <button type="submit" class="btn btn-danger">Evet, Sil</button>
+            <a href="/Admin/Hizmet/Index" class="btn btn-secondary">İptal</a>
+        </form>
+    </div>
+</div>
