@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using FitnessCenter.Models;
 using Microsoft.AspNetCore.Identity;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // MVC
