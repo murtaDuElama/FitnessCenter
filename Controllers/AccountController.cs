@@ -1,72 +1,90 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using FitnessCenter.Models;
+using FitnessCenter.Models.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using FitnessCenter.Models;
 
 public class AccountController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
 
-    public AccountController(
-        UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager)
+    public AccountController(UserManager<ApplicationUser> userManager,
+                             SignInManager<ApplicationUser> signInManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
     }
 
-    public IActionResult Register() => View();
-    public IActionResult Login() => View();
-
-    [HttpPost]
-    public async Task<IActionResult> Register(string email, string password)
+    // GET: /Account/Register
+    [HttpGet]
+    public IActionResult Register()
     {
-        var user = new ApplicationUser { UserName = email, Email = email };
-
-        var result = await _userManager.CreateAsync(user, password);
-
-        if (result.Succeeded)
-            return RedirectToAction("Login");
-
-        foreach (var err in result.Errors)
-            ModelState.AddModelError("", err.Description);
-
         return View();
     }
+
+    // POST: /Account/Register
     [HttpPost]
-    public async Task<IActionResult> Login(string email, string password)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Register(RegisterViewModel model)
     {
-        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var user = new ApplicationUser
         {
-            ModelState.AddModelError("", "Email ve şifre gerekli.");
-            return View();
-        }
+            FullName = model.FullName,
+            Email = model.Email,
+            UserName = model.Email
+        };
 
-        // ⭐ 1) Kullanıcıyı email ile bul
-        var user = await _userManager.FindByEmailAsync(email);
-
-        if (user == null)
-        {
-            ModelState.AddModelError("", "Kullanıcı bulunamadı.");
-            return View();
-        }
-
-        // ⭐ 2) UserName üzerinden giriş yaptır
-        var result = await _signInManager.PasswordSignInAsync(user.UserName, password, false, false);
+        var result = await _userManager.CreateAsync(user, model.Password);
 
         if (result.Succeeded)
         {
+            await _signInManager.SignInAsync(user, false);
             return RedirectToAction("Index", "Home");
         }
 
-        ModelState.AddModelError("", "Giriş başarısız.");
+        foreach (var error in result.Errors)
+            ModelState.AddModelError("", error.Description);
+
+        return View(model);
+    }
+
+    // GET: /Account/Login
+    [HttpGet]
+    public IActionResult Login()
+    {
         return View();
     }
 
+    // POST: /Account/Login
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Login(LoginViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
 
+        var result = await _signInManager.PasswordSignInAsync(
+            model.Email,
+            model.Password,
+            model.RememberMe,
+            lockoutOnFailure: false
+        );
+
+        if (result.Succeeded)
+            return RedirectToAction("Index", "Home");
+
+        ModelState.AddModelError("", "Email veya şifre hatalı.");
+        return View(model);
+    }
+
+    // GET: /Account/Logout
+    [HttpGet]
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Login");
     }
 }

@@ -2,14 +2,16 @@
 
 public class RegisterViewModel
 {
+    [Required(ErrorMessage = "Ad Soyad zorunludur.")]
     public string FullName { get; set; }
 
-    [Required]
-    [EmailAddress]
+    [Required(ErrorMessage = "Email zorunludur.")]
+    [EmailAddress(ErrorMessage = "Geçerli bir email giriniz.")]
     public string Email { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Şifre zorunludur.")]
     [DataType(DataType.Password)]
+    [MinLength(6, ErrorMessage = "Şifre en az 6 karakter olmalıdır.")]
     public string Password { get; set; }
 
     [DataType(DataType.Password)]

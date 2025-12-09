@@ -1,0 +1,43 @@
+﻿@model FitnessCenter.Areas.Admin.Models.DashboardViewModel
+
+<h2 class="mb-4">Yönetim Paneli</h2>
+
+<div class="row">
+
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h4>Hizmet Sayısı</h4>
+                <h2>@Model.TotalHizmet</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-secondary mb-3">
+            <div class="card-body">
+                <h4>Antrenör Sayısı</h4>
+                <h2>@Model.TotalAntrenor</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h4>Randevu Sayısı</h4>
+                <h2>@Model.TotalRandevu</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-dark mb-3">
+            <div class="card-body">
+                <h4>Üye Sayısı</h4>
+                <h2>@Model.TotalUsers</h2>
+            </div>
+        </div>
+    </div>
+
+</div>
