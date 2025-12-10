@@ -5,10 +5,11 @@ using FitnessCenter.Data;
 using FitnessCenter.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace FitnessCenter.Controllers
 {
-    [Authorize] // Sadece giriş yapmış üyeler erişebilir
+    [Authorize]
     public class RandevuController : Controller
     {
         private readonly AppDbContext _context;
@@ -20,65 +21,105 @@ namespace FitnessCenter.Controllers
             _userManager = userManager;
         }
 
-        // ------------------ RANDEVU FORMU (GET) ------------------
-        public IActionResult Create()
+        // ------------------ 1) HİZMET SEÇ ------------------
+        public IActionResult SelectService()
         {
-            ViewBag.Hizmetler = new SelectList(_context.Hizmetler.ToList(), "Id", "Ad");
-            ViewBag.Antrenorler = new SelectList(_context.Antrenorler.ToList(), "Id", "AdSoyad");
-            return View();
+            var hizmetler = _context.Hizmetler.ToList();
+            return View(hizmetler);
         }
 
-        // ------------------ RANDEVU KAYDETME (POST) ------------------
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Randevu randevu)
+        // ------------------ 2) HİZMETE GÖRE ANTRENÖR SEÇ ------------------
+        public IActionResult SelectTrainer(int hizmetId)
         {
-            // Giriş yapan kullanıcıyı bul
-            var user = await _userManager.GetUserAsync(User);
-            randevu.UserId = user.Id;
-            randevu.AdSoyad = user.AdSoyad ?? "İsimsiz Üye"; // Eğer modelden gelmezse kullanıcının adını al
+            var hizmet = _context.Hizmetler.Find(hizmetId);
 
-            // "Direkt alınsın" dediğin için Onay durumunu TRUE yapabiliriz veya 
-            // Admin onayı beklenecekse FALSE kalabilir. Senin isteğine göre TRUE yapıyorum:
-            randevu.Onaylandi = true;
+            if (hizmet == null)
+                return NotFound();
 
-            // 1. KONTROL: Aynı Antrenörde, Aynı Tarih ve Saatte randevu var mı?
-            bool musaitDegil = await _context.Randevular.AnyAsync(x =>
-                x.AntrenorId == randevu.AntrenorId &&
-                x.Tarih == randevu.Tarih &&
-                x.Saat == randevu.Saat);
+            // Uzmanlık alanına göre eğitmenleri filtrele
+            var antrenorler = _context.Antrenorler
+                .Where(a => a.Uzmanlik == hizmet.Ad)
+                .ToList();
 
-            if (musaitDegil)
+            ViewBag.Hizmet = hizmet;
+            return View(antrenorler);
+        }
+
+        // ------------------ 3) ANTRENÖR MÜSAİTLİK SAATLERİ ------------------
+        public IActionResult SelectTime(int hizmetId, int antrenorId)
+        {
+            // Tanımlı saat aralıkları
+            var allHours = new List<string>
             {
-                ModelState.AddModelError("", "Seçtiğiniz antrenörün bu tarih ve saatte başka bir randevusu mevcut. Lütfen başka bir saat seçiniz.");
+                "09:00","10:00","11:00","13:00","14:00","15:00"
+            };
+
+            // Bugün o eğitmenin dolu saatlerini çekiyoruz
+            var doluSaatler = _context.Randevular
+                .Where(r => r.AntrenorId == antrenorId && r.Tarih.Date == DateTime.Today)
+                .Select(r => r.Saat)
+                .ToList();
+
+            // Müsait saatler
+            var musait = allHours.Where(h => !doluSaatler.Contains(h)).ToList();
+
+            ViewBag.HizmetId = hizmetId;
+            ViewBag.AntrenorId = antrenorId;
+
+            return View(musait);
+        }
+
+        // ------------------ 4) RANDEVU OLUŞTUR ------------------
+        [Authorize]
+        public async Task<IActionResult> Create(int hizmetId, int antrenorId, string hour)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized();
+
+            // 1. Antrenör o saatte dolu mu?
+            bool dolu = await _context.Randevular.AnyAsync(x =>
+                x.AntrenorId == antrenorId &&
+                x.Tarih.Date == DateTime.Today &&
+                x.Saat == hour);
+
+            if (dolu)
+            {
+                TempData["Error"] = "Bu saat dolu! Lütfen başka bir saat seçiniz.";
+                return RedirectToAction("SelectTime", new { hizmetId, antrenorId });
             }
 
-            // 2. KONTROL: Kullanıcının aynı saatte başka randevusu var mı? (İsteğe bağlı)
+            // 2. Kullanıcının kendi çakışması var mı?
             bool kullaniciDolu = await _context.Randevular.AnyAsync(x =>
                 x.UserId == user.Id &&
-                x.Tarih == randevu.Tarih &&
-                x.Saat == randevu.Saat);
+                x.Tarih.Date == DateTime.Today &&
+                x.Saat == hour);
 
             if (kullaniciDolu)
             {
-                ModelState.AddModelError("", "Bu saatte zaten başka bir randevunuz var.");
+                TempData["Error"] = "Bu saatte zaten başka bir randevunuz var!";
+                return RedirectToAction("SelectTime", new { hizmetId, antrenorId });
             }
 
-            if (ModelState.IsValid)
+            var randevu = new Randevu
             {
-                _context.Randevular.Add(randevu);
-                await _context.SaveChangesAsync();
-                TempData["Success"] = "Randevunuz başarıyla oluşturuldu.";
-                return RedirectToAction("MyRandevus");
-            }
+                UserId = user.Id,
+                HizmetId = hizmetId,
+                AntrenorId = antrenorId,
+                Tarih = DateTime.Today,
+                Saat = hour,
+                Onaylandi = true,
+                AdSoyad = user.AdSoyad ?? user.UserName
+            };
 
-            // Hata varsa formu tekrar doldur
-            ViewBag.Hizmetler = new SelectList(_context.Hizmetler.ToList(), "Id", "Ad");
-            ViewBag.Antrenorler = new SelectList(_context.Antrenorler.ToList(), "Id", "AdSoyad");
-            return View(randevu);
+            _context.Randevular.Add(randevu);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Randevunuz başarıyla oluşturuldu.";
+            return RedirectToAction("MyRandevus");
         }
 
-        // ------------------ RANDEVULARIM (LİSTE) ------------------
+        // ------------------ 5) RANDEVULARIM ------------------
         public async Task<IActionResult> MyRandevus()
         {
             var userId = _userManager.GetUserId(User);
@@ -86,14 +127,14 @@ namespace FitnessCenter.Controllers
             var randevular = await _context.Randevular
                 .Include(r => r.Hizmet)
                 .Include(r => r.Antrenor)
-                .Where(r => r.UserId == userId) // Sadece kendi randevuları
+                .Where(r => r.UserId == userId)
                 .OrderByDescending(r => r.Tarih)
                 .ToListAsync();
 
             return View(randevular);
         }
 
-        // ------------------ RANDEVU İPTAL ET (KULLANICI) ------------------
+        // ------------------ 6) RANDEVU İPTAL ------------------
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> IptalEt(int id)
@@ -101,7 +142,6 @@ namespace FitnessCenter.Controllers
             var randevu = await _context.Randevular.FindAsync(id);
             var userId = _userManager.GetUserId(User);
 
-            // Güvenlik Kontrolü: Sadece randevunun sahibi iptal edebilir
             if (randevu != null && randevu.UserId == userId)
             {
                 _context.Randevular.Remove(randevu);

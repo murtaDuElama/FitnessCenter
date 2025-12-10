@@ -1,16 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using FitnessCenter.Models; // Hizmet, Antrenor, ApplicationUser için gerekli
 
 public class Randevu
 {
     public int Id { get; set; }
 
+    // Üyeye ait görüntülenecek adsoyad (isteğe bağlı)
     [Required]
     public string AdSoyad { get; set; }
 
-    [Required]
-    public string Telefon { get; set; }
+    // ------------------ İLİŞKİLER ------------------
 
-    // İlişkiler
     [Required]
     public int HizmetId { get; set; }
     public Hizmet Hizmet { get; set; }
@@ -19,13 +19,19 @@ public class Randevu
     public int AntrenorId { get; set; }
     public Antrenor Antrenor { get; set; }
 
+    // ------------------ TARİH - SAAT ------------------
+
     [Required]
     public DateTime Tarih { get; set; }
 
     [Required]
     public string Saat { get; set; }
 
-    // ⭐ EKLEDİĞİMİZ TEK ŞEY BU
+    // ------------------ ÜYE İLİŞKİSİ ------------------
+
     public string UserId { get; set; }
+    public ApplicationUser User { get; set; }   // ⭐ Eksik olan navigation property
+
+    // ------------------ DURUM ------------------
     public bool Onaylandi { get; set; } = false;
 }

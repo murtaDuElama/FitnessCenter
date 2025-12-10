@@ -4,6 +4,7 @@ using FitnessCenter.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessCenter.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251210151615_RemoveTelefonColumn")]
+    partial class RemoveTelefonColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,7 +46,7 @@ namespace FitnessCenter.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Antrenorler", (string)null);
+                    b.ToTable("Antrenorler");
                 });
 
             modelBuilder.Entity("Hizmet", b =>
@@ -66,7 +69,7 @@ namespace FitnessCenter.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Hizmetler", (string)null);
+                    b.ToTable("Hizmetler");
                 });
 
             modelBuilder.Entity("Randevu", b =>
@@ -107,7 +110,7 @@ namespace FitnessCenter.Migrations
 
                     b.HasIndex("HizmetId");
 
-                    b.ToTable("Randevular", (string)null);
+                    b.ToTable("Randevular");
                 });
 
             modelBuilder.Entity("Randevu", b =>

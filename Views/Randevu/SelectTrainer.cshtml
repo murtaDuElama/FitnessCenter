@@ -1,0 +1,16 @@
+﻿@using FitnessCenter.Models
+@model IEnumerable<Antrenor>
+
+<h2>@ViewBag.Hizmet.Ad hizmetini veren eğitmenler</h2>
+
+@foreach (var a in Model)
+{
+    <div class="card p-3 my-2">
+        <h4>@a.AdSoyad (@a.Uzmanlik)</h4>
+
+        <a class="btn btn-primary"
+           href="/Randevu/SelectTime?hizmetId=@ViewBag.Hizmet.Id&antrenorId=@a.Id">
+            Müsait Saatleri Gör
+        </a>
+    </div>
+}

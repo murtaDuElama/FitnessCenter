@@ -1,0 +1,15 @@
+﻿@model IEnumerable<string>
+
+<h2>Müsait Saatler</h2>
+
+@foreach (var s in Model)
+{
+    <div class="card p-2 my-2">
+        <h5>@s</h5>
+        <a class="btn btn-success"
+           href="/Randevu/Create?hizmetId=@ViewBag.HizmetId&antrenorId=@ViewBag.AntrenorId&hour=@s">
+            Bu Saati Seç
+        </a>
+
+    </div>
+}

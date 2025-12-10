@@ -31,5 +31,19 @@ namespace FitnessCenter.Areas.Admin.Controllers
 
             return View(model);
         }
+
+        // TÜM RANDEVULAR
+        public IActionResult Randevular()
+        {
+            var randevular = _appDb.Randevular
+                .Include(r => r.Hizmet)
+                .Include(r => r.Antrenor)
+                .Include(r => r.User)
+                .OrderByDescending(r => r.Tarih)
+                .ToList();
+
+            return View(randevular);
+        }
+
     }
 }

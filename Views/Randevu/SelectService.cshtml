@@ -1,0 +1,12 @@
+﻿@model IEnumerable<Hizmet>
+
+<h2>Hangi hizmeti almak istiyorsunuz?</h2>
+
+<ul class="list-group">
+    @foreach (var h in Model)
+    {
+        <li class="list-group-item">
+            <a href="/Randevu/SelectTrainer?hizmetId=@h.Id">@h.Ad</a>
+        </li>
+    }
+</ul>
