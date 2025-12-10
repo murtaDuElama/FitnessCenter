@@ -1,0 +1,58 @@
+﻿@model List<Antrenor>
+
+@{
+    ViewData["Title"] = "Eğitmenlerimiz";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Eğitmen Kadromuz</h2>
+        @if (User.IsInRole("Admin"))
+        {
+            <a href="/Antrenor/Create" class="btn btn-primary">Yeni Antrenör Ekle</a>
+        }
+    </div>
+
+    <div class="row">
+        @foreach (var a in Model)
+        {
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 shadow-sm text-center">
+                    <div class="card-img-top pt-3">
+                        @if (!string.IsNullOrEmpty(a.FotografUrl))
+                        {
+                            <img src="@a.FotografUrl" class="rounded-circle border" alt="@a.AdSoyad" style="width: 150px; height: 150px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center text-white" style="width: 150px; height: 150px; font-size: 3rem;">
+                                @a.AdSoyad.Substring(0, 1)
+                            </div>
+                        }
+                    </div>
+
+                    <div class="card-body">
+                        <h5 class="card-title mt-2">@a.AdSoyad</h5>
+                        <p class="card-text text-muted">
+                            <span class="badge bg-info text-dark">@a.Uzmanlik</span> Uzmanı
+                        </p>
+                    </div>
+
+                    <div class="card-footer bg-white border-top-0 pb-3">
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <div class="d-flex gap-2 justify-content-center">
+                                <a href="/Antrenor/Edit/@a.Id" class="btn btn-warning btn-sm">Düzenle</a>
+                                <a href="/Antrenor/Delete/@a.Id" class="btn btn-danger btn-sm">Sil</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <a href="/Randevu/Create" class="btn btn-sm btn-outline-success">Program Yap</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,72 @@
+﻿@model Randevu
+
+@{
+    ViewData["Title"] = "Randevu Düzenle";
+}
+
+<div class="container mt-4">
+    <h2>Randevu Düzenle</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="UserId" /> <div class="mb-3">
+                    <label class="form-label">Üye Adı Soyadı</label>
+                    <input asp-for="AdSoyad" class="form-control" />
+                    <span asp-validation-for="AdSoyad" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Telefon</label>
+                    <input asp-for="Telefon" class="form-control" />
+                    <span asp-validation-for="Telefon" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Hizmet</label>
+                    <select asp-for="HizmetId" class="form-select" asp-items="ViewBag.Hizmetler"></select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Antrenör</label>
+                    <select asp-for="AntrenorId" class="form-select" asp-items="ViewBag.Antrenorler"></select>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Tarih</label>
+                        <input asp-for="Tarih" type="date" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Saat</label>
+                        <select asp-for="Saat" class="form-select">
+                            <option value="09:00">09:00</option>
+                            <option value="10:00">10:00</option>
+                            <option value="11:00">11:00</option>
+                            <option value="13:00">13:00</option>
+                            <option value="14:00">14:00</option>
+                            <option value="15:00">15:00</option>
+                            <option value="16:00">16:00</option>
+                            <option value="17:00">17:00</option>
+                            <option value="18:00">18:00</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" asp-for="Onaylandi" />
+                    <label class="form-check-label" asp-for="Onaylandi">
+                        Randevu Onaylandı mı?
+                    </label>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Değişiklikleri Kaydet</button>
+                    <a href="/Admin/Randevu/Index" class="btn btn-secondary">İptal</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

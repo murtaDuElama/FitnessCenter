@@ -97,5 +97,34 @@ namespace FitnessCenter.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login");
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAccount()
+        {
+            // Şu anki kullanıcıyı al
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user != null)
+            {
+                // Kullanıcıyı veritabanından sil
+                var result = await _userManager.DeleteAsync(user);
+
+                if (result.Succeeded)
+                {
+                    // Oturumu kapat
+                    await _signInManager.SignOutAsync();
+                    return RedirectToAction("Index", "Home");
+                }
+
+                // Hata olursa (örneğin ilişkili veriler yüzünden)
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
     }
 }
