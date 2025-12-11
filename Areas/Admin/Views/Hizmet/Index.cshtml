@@ -1,101 +1,101 @@
-﻿@model List<Randevu>
+﻿@model List<Hizmet>
 
 @{
-    ViewData["Title"] = "Randevu Yönetimi";
+    ViewData["Title"] = "Hizmet Yönetimi";
 }
 
 <div class="container-fluid">
-    <h2 class="mb-4">Randevu Yönetimi</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-list-alt me-2"></i>Hizmet Yönetimi</h2>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Yeni Hizmet Ekle
+        </a>
+    </div>
 
-    @if (TempData["SuccessMessage"] != null)
+    @if (TempData["Success"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
-    @if (TempData["DeleteMessage"] != null)
+
+    @if (TempData["Delete"] != null)
     {
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            @TempData["DeleteMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <i class="fas fa-trash me-2"></i>@TempData["Delete"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
-    <div class="card shadow">
-        <div class="card-header bg-dark text-white">
-            <h5 class="mb-0">Tüm Randevular</h5>
-        </div>
+    <div class="card shadow-sm">
         <div class="card-body">
-            <table class="table table-bordered table-striped table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Tarih / Saat</th>
-                        <th>Müşteri</th>
-                        <th>Telefon</th>
-                        <th>Hizmet</th>
-                        <th>Antrenör</th>
-                        <th class="text-center">Durum</th>
-                        <th class="text-center">İşlemler</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model.Count == 0)
-                    {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
                         <tr>
-                            <td colspan="7" class="text-center text-muted p-4">
-                                Kayıtlı randevu bulunmamaktadır.
-                            </td>
+                            <th><i class="fas fa-hashtag me-2"></i>ID</th>
+                            <th><i class="fas fa-tag me-2"></i>Hizmet Adı</th>
+                            <th><i class="fas fa-clock me-2"></i>Süre</th>
+                            <th><i class="fas fa-lira-sign me-2"></i>Ücret</th>
+                            <th class="text-center"><i class="fas fa-cog me-2"></i>İşlemler</th>
                         </tr>
-                    }
-                    else
-                    {
-                        @foreach (var r in Model)
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td><strong>@item.Id</strong></td>
+                                    <td>
+                                        <i class="fas fa-dumbbell text-primary me-2"></i>
+                                        <strong>@item.Ad</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">@item.Sure dk</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">@item.Ucret ₺</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info" title="Detaylar">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning" title="Düzenle">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger" title="Sil">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
                         {
                             <tr>
-                                <td>
-                                    <strong>@r.Tarih.ToShortDateString()</strong>
-                                    <br />
-                                    <span class="text-muted">@r.Saat</span>
-                                </td>
-                                <td>@r.AdSoyad</td>
-                                <td>@r.Hizmet?.Ad</td>
-                                <td>@r.Antrenor?.AdSoyad</td>
-                                <td class="text-center">
-                                    @if (r.Onaylandi)
-                                    {
-                                        <span class="badge bg-success rounded-pill px-3">Onaylandı</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-warning text-dark rounded-pill px-3">Bekliyor</span>
-                                    }
-                                </td>
-                                <td class="text-center">
-                                    <div class="d-flex justify-content-center gap-2">
-                                        @if (!r.Onaylandi)
-                                        {
-                                            <form asp-action="Onayla" asp-controller="Randevu" asp-area="Admin" method="post">
-                                                <input type="hidden" name="id" value="@r.Id" />
-                                                <button type="submit" class="btn btn-sm btn-success" title="Onayla">
-                                                    Onayla
-                                                </button>
-                                            </form>
-                                        }
-
-                                        <form asp-action="Sil" asp-controller="Randevu" asp-area="Admin" method="post" onsubmit="return confirm('Bu randevuyu silmek istediğinize emin misiniz?');">
-                                            <input type="hidden" name="id" value="@r.Id" />
-                                            <button type="submit" class="btn btn-sm btn-danger" title="Sil">
-                                                Sil
-                                            </button>
-                                        </form>
-                                    </div>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                    Henüz hizmet eklenmemiş.
                                 </td>
                             </tr>
                         }
-                    }
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+    .table th {
+        white-space: nowrap;
+    }
+
+    .btn-group .btn {
+        margin: 0 2px;
+    }
+</style>

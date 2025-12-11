@@ -1,30 +1,93 @@
 ﻿@model List<Antrenor>
 
-<h2>Antrenör Listesi</h2>
-<hr />
-<a href="/Admin/Antrenor/Create" class="btn btn-primary mb-3">Yeni Antrenör Ekle</a>
+@{
+    ViewData["Title"] = "Antrenör Yönetimi";
+}
 
-<table class="table table-bordered table-hover">
-    <thead class="table-light">
-        <tr>
-            <th>ID</th>
-            <th>Ad Soyad</th>
-            <th>Uzmanlık</th>
-            <th>İşlemler</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Id</td>
-                <td>@item.AdSoyad</td>
-                <td>@item.Uzmanlik</td>
-                <td>
-                    <a href="/Admin/Antrenor/Edit/@item.Id" class="btn btn-warning btn-sm">Düzenle</a>
-                    <a href="/Admin/Antrenor/Delete/@item.Id" class="btn btn-danger btn-sm">Sil</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-user-tie me-2"></i>Antrenör Yönetimi</h2>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Yeni Antrenör Ekle
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Delete"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-trash me-2"></i>@TempData["Delete"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th><i class="fas fa-hashtag me-2"></i>ID</th>
+                            <th><i class="fas fa-user me-2"></i>Ad Soyad</th>
+                            <th><i class="fas fa-dumbbell me-2"></i>Uzmanlık</th>
+                            <th><i class="fas fa-image me-2"></i>Fotoğraf</th>
+                            <th class="text-center"><i class="fas fa-cog me-2"></i>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td><strong>@item.Id</strong></td>
+                                    <td>@item.AdSoyad</td>
+                                    <td><span class="badge bg-info">@item.Uzmanlik</span></td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.FotografUrl))
+                                        {
+                                            <img src="@item.FotografUrl" alt="@item.AdSoyad" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" />
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info" title="Detaylar">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning" title="Düzenle">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger" title="Sil">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                    Henüz antrenör eklenmemiş.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

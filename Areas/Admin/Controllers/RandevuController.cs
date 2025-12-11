@@ -16,7 +16,7 @@ namespace FitnessCenter.Areas.Admin.Controllers
             _context = context;
         }
 
-        // RANDEVU LİSTESİ
+        // --------------------- RANDEVU LİSTESİ ---------------------
         public async Task<IActionResult> Index()
         {
             var randevular = await _context.Randevular
@@ -29,7 +29,38 @@ namespace FitnessCenter.Areas.Admin.Controllers
             return View(randevular);
         }
 
-        // ONAYLA
+        // --------------------- EDIT GET ---------------------
+        public async Task<IActionResult> Edit(int id)
+        {
+            var randevu = await _context.Randevular
+                .Include(r => r.Hizmet)
+                .Include(r => r.Antrenor)
+                .Include(r => r.User)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (randevu == null)
+                return NotFound();
+
+            return View(randevu);
+        }
+
+        // --------------------- EDIT POST ---------------------
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, bool Onaylandi)
+        {
+            var randevu = await _context.Randevular.FindAsync(id);
+            if (randevu == null)
+                return NotFound();
+
+            randevu.Onaylandi = Onaylandi;
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Randevu durumu güncellendi!";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // --------------------- ONAYLA ---------------------
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Onayla(int id)
@@ -44,11 +75,30 @@ namespace FitnessCenter.Areas.Admin.Controllers
             randevu.Onaylandi = true;
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Randevu onaylandı.";
+            TempData["Success"] = "Randevu onaylandı!";
             return RedirectToAction(nameof(Index));
         }
 
-        // SİL
+        // --------------------- İPTAL ET ---------------------
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> IptalEt(int id)
+        {
+            var randevu = await _context.Randevular.FindAsync(id);
+            if (randevu == null)
+            {
+                TempData["Delete"] = "Randevu bulunamadı.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            randevu.Onaylandi = false;
+            await _context.SaveChangesAsync();
+
+            TempData["Delete"] = "Randevu iptal edildi!";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // --------------------- SİL ---------------------
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Sil(int id)
@@ -63,7 +113,7 @@ namespace FitnessCenter.Areas.Admin.Controllers
             _context.Randevular.Remove(randevu);
             await _context.SaveChangesAsync();
 
-            TempData["Delete"] = "Randevu başarıyla silindi.";
+            TempData["Delete"] = "Randevu başarıyla silindi!";
             return RedirectToAction(nameof(Index));
         }
     }

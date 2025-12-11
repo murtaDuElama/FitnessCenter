@@ -4,42 +4,58 @@
     ViewData["Title"] = "Yeni Hizmet Ekle";
 }
 
-<h2 class="mb-4">Yeni Hizmet Ekle</h2>
-<hr />
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Yeni Hizmet Ekle</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Create" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="mb-3">
+                            <label asp-for="Ad" class="form-label">
+                                <i class="fas fa-tag me-2"></i>Hizmet Adı
+                            </label>
+                            <input asp-for="Ad" class="form-control" placeholder="Örn: Fitness, Pilates, Yoga" required />
+                            <span asp-validation-for="Ad" class="text-danger"></span>
+                        </div>
 
-            <div class="mb-3">
-                <label asp-for="Ad" class="form-label">Hizmet Adı</label>
-                <input asp-for="Ad" class="form-control" placeholder="Örn: Fitness, Pilates" required />
-                <span asp-validation-for="Ad" class="text-danger"></span>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Sure" class="form-label">
+                                    <i class="fas fa-clock me-2"></i>Süre (Dakika)
+                                </label>
+                                <input asp-for="Sure" class="form-control" type="number" min="1" placeholder="Örn: 60" required />
+                                <span asp-validation-for="Sure" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Ucret" class="form-label">
+                                    <i class="fas fa-lira-sign me-2"></i>Ücret (₺)
+                                </label>
+                                <input asp-for="Ucret" class="form-control" type="number" step="0.01" min="0" placeholder="Örn: 150.00" required />
+                                <span asp-validation-for="Ucret" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Geri Dön
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-2"></i>Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <div class="mb-3">
-                <label asp-for="Sure" class="form-label">Süre (Dakika)</label>
-                <input asp-for="Sure" class="form-control" type="number" placeholder="60" required />
-                <span asp-validation-for="Sure" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Ucret" class="form-label">Ücret (₺)</label>
-                <input asp-for="Ucret" class="form-control" type="number" step="0.01" placeholder="0.00" required />
-                <span asp-validation-for="Ucret" class="text-danger"></span>
-            </div>
-
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-success">Kaydet</button>
-                <a href="/Admin/Hizmet/Index" class="btn btn-secondary">İptal</a>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
 }

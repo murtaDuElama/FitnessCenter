@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace FitnessCenter.Migrations.AuthDb
+namespace FitnessCenter.Migrations
 {
-    [DbContext(typeof(AuthDbContext))]
-    [Migration("20251209102451_UserAdSoyadUpdate")]
-    partial class UserAdSoyadUpdate
+    [DbContext(typeof(AppDbContext))]
+    [Migration("20251211211145_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,30 @@ namespace FitnessCenter.Migrations.AuthDb
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Antrenor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdSoyad")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FotografUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Uzmanlik")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Antrenorler");
+                });
 
             modelBuilder.Entity("FitnessCenter.Models.ApplicationUser", b =>
                 {
@@ -92,6 +116,29 @@ namespace FitnessCenter.Migrations.AuthDb
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Hizmet", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Ad")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Sure")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Ucret")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Hizmetler");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -227,6 +274,49 @@ namespace FitnessCenter.Migrations.AuthDb
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Randevu", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdSoyad")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("AntrenorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HizmetId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Onaylandi")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Saat")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Tarih")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AntrenorId");
+
+                    b.HasIndex("HizmetId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Randevular");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -276,6 +366,33 @@ namespace FitnessCenter.Migrations.AuthDb
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Randevu", b =>
+                {
+                    b.HasOne("Antrenor", "Antrenor")
+                        .WithMany()
+                        .HasForeignKey("AntrenorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Hizmet", "Hizmet")
+                        .WithMany()
+                        .HasForeignKey("HizmetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FitnessCenter.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Antrenor");
+
+                    b.Navigation("Hizmet");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

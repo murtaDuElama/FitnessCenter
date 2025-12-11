@@ -4,30 +4,81 @@
     ViewData["Title"] = "Hizmet Detayları";
 }
 
-<h2 class="mb-4">Hizmet Detayları</h2>
-<hr />
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0"><i class="fas fa-info-circle me-2"></i>Hizmet Detayları</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="bg-light p-4 rounded text-center">
+                                <i class="fas fa-dumbbell fa-3x text-primary mb-3"></i>
+                                <h3 class="mb-0">@Model.Ad</h3>
+                            </div>
+                        </div>
+                    </div>
 
-<div class="card shadow-sm w-50">
-    <div class="card-header bg-primary text-white">
-        <h5 class="mb-0">@Model.Ad</h5>
-    </div>
-    <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-4">Hizmet ID:</dt>
-            <dd class="col-sm-8">@Model.Id</dd>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card bg-light mb-3">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-clock fa-2x text-info mb-2"></i>
+                                    <h5 class="card-title">Süre</h5>
+                                    <p class="card-text fs-4">
+                                        <span class="badge bg-info">@Model.Sure dakika</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
 
-            <dt class="col-sm-4">Hizmet Adı:</dt>
-            <dd class="col-sm-8">@Model.Ad</dd>
+                        <div class="col-md-6">
+                            <div class="card bg-light mb-3">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-lira-sign fa-2x text-success mb-2"></i>
+                                    <h5 class="card-title">Ücret</h5>
+                                    <p class="card-text fs-4">
+                                        <span class="badge bg-success">@Model.Ucret ₺</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-            <dt class="col-sm-4">Süre:</dt>
-            <dd class="col-sm-8">@Model.Sure Dakika</dd>
+                    <dl class="row mt-3">
+                        <dt class="col-sm-3"><i class="fas fa-hashtag me-2"></i>Hizmet ID:</dt>
+                        <dd class="col-sm-9"><strong>@Model.Id</strong></dd>
+                    </dl>
 
-            <dt class="col-sm-4">Ücret:</dt>
-            <dd class="col-sm-8">@Model.Ucret.ToString("C2")</dd>
-        </dl>
-    </div>
-    <div class="card-footer">
-        <a href="/Admin/Hizmet/Edit/@Model.Id" class="btn btn-warning">Düzenle</a>
-        <a href="/Admin/Hizmet/Index" class="btn btn-secondary">Listeye Dön</a>
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Geri Dön
+                        </a>
+                        <div>
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+                                <i class="fas fa-edit me-2"></i>Düzenle
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>Sil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<style>
+    .card.bg-light {
+        border: 2px solid #e9ecef;
+        transition: transform 0.2s;
+    }
+
+        .card.bg-light:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+</style>

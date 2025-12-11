@@ -1,5 +1,53 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model Antrenor
+
 @{
+    ViewData["Title"] = "Antrenör Detayları";
 }
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0"><i class="fas fa-info-circle me-2"></i>Antrenör Detayları</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @if (!string.IsNullOrEmpty(Model.FotografUrl))
+                        {
+                            <div class="col-md-4 text-center mb-3">
+                                <img src="@Model.FotografUrl" alt="@Model.AdSoyad" class="img-fluid rounded-circle shadow" style="max-width: 200px; height: 200px; object-fit: cover;" />
+                            </div>
+                        }
+                        <div class="@(string.IsNullOrEmpty(Model.FotografUrl) ? "col-md-12" : "col-md-8")">
+                            <dl class="row">
+                                <dt class="col-sm-4"><i class="fas fa-hashtag me-2"></i>ID:</dt>
+                                <dd class="col-sm-8"><strong>@Model.Id</strong></dd>
+
+                                <dt class="col-sm-4"><i class="fas fa-user me-2"></i>Ad Soyad:</dt>
+                                <dd class="col-sm-8">@Model.AdSoyad</dd>
+
+                                <dt class="col-sm-4"><i class="fas fa-dumbbell me-2"></i>Uzmanlık:</dt>
+                                <dd class="col-sm-8"><span class="badge bg-info">@Model.Uzmanlik</span></dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Geri Dön
+                        </a>
+                        <div>
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+                                <i class="fas fa-edit me-2"></i>Düzenle
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>Sil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

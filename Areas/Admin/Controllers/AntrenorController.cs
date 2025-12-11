@@ -1,82 +1,106 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using FitnessCenter.Data;
-public class AntrenorController : Controller
+using FitnessCenter.Models;
+
+namespace FitnessCenter.Areas.Admin.Controllers
 {
-    private readonly AppDbContext _context;
-
-    public AntrenorController(AppDbContext context)
+    [Area("Admin")]
+    [Authorize(Roles = "Admin")]
+    public class AntrenorController : Controller
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
 
-    // --------------------- LISTE ---------------------
-    public async Task<IActionResult> Index()
-    {
-        var liste = await _context.Antrenorler.ToListAsync();
-        return View(liste);
-    }
+        public AntrenorController(AppDbContext context)
+        {
+            _context = context;
+        }
 
-    // --------------------- CREATE GET ---------------------
-    public IActionResult Create()
-    {
-        return View();
-    }
+        // --------------------- LISTE ---------------------
+        public async Task<IActionResult> Index()
+        {
+            var liste = await _context.Antrenorler.ToListAsync();
+            return View(liste);
+        }
 
-    // --------------------- CREATE POST ---------------------
-    [HttpPost]
-    public async Task<IActionResult> Create(Antrenor a)
-    {
-        if (!ModelState.IsValid)
-            return View(a);
+        // --------------------- DETAILS ---------------------
+        public async Task<IActionResult> Details(int id)
+        {
+            var ant = await _context.Antrenorler.FindAsync(id);
+            if (ant == null)
+                return NotFound();
 
-        _context.Antrenorler.Add(a);
-        await _context.SaveChangesAsync();
-        return RedirectToAction("Index");
-    }
+            return View(ant);
+        }
 
-    // --------------------- EDIT GET ---------------------
-    public async Task<IActionResult> Edit(int id)
-    {
-        var ant = await _context.Antrenorler.FindAsync(id);
-        if (ant == null)
-            return NotFound();
+        // --------------------- CREATE GET ---------------------
+        public IActionResult Create()
+        {
+            return View();
+        }
 
-        return View(ant);
-    }
+        // --------------------- CREATE POST ---------------------
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Antrenor a)
+        {
+            if (!ModelState.IsValid)
+                return View(a);
 
-    // --------------------- EDIT POST ---------------------
-    [HttpPost]
-    public async Task<IActionResult> Edit(Antrenor a)
-    {
-        if (!ModelState.IsValid)
-            return View(a);
+            _context.Antrenorler.Add(a);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Antrenör başarıyla eklendi!";
+            return RedirectToAction("Index");
+        }
 
-        _context.Antrenorler.Update(a);
-        await _context.SaveChangesAsync();
-        return RedirectToAction("Index");
-    }
+        // --------------------- EDIT GET ---------------------
+        public async Task<IActionResult> Edit(int id)
+        {
+            var ant = await _context.Antrenorler.FindAsync(id);
+            if (ant == null)
+                return NotFound();
 
-    // --------------------- DELETE GET ---------------------
-    public async Task<IActionResult> Delete(int id)
-    {
-        var ant = await _context.Antrenorler.FindAsync(id);
-        if (ant == null)
-            return NotFound();
+            return View(ant);
+        }
 
-        return View(ant);
-    }
+        // --------------------- EDIT POST ---------------------
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Antrenor a)
+        {
+            if (!ModelState.IsValid)
+                return View(a);
 
-    // --------------------- DELETE POST ---------------------
-    [HttpPost, ActionName("Delete")]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        var ant = await _context.Antrenorler.FindAsync(id);
-        if (ant == null)
-            return NotFound();
+            _context.Antrenorler.Update(a);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Antrenör başarıyla güncellendi!";
+            return RedirectToAction("Index");
+        }
 
-        _context.Antrenorler.Remove(ant);
-        await _context.SaveChangesAsync();
-        return RedirectToAction("Index");
+        // --------------------- DELETE GET ---------------------
+        public async Task<IActionResult> Delete(int id)
+        {
+            var ant = await _context.Antrenorler.FindAsync(id);
+            if (ant == null)
+                return NotFound();
+
+            return View(ant);
+        }
+
+        // --------------------- DELETE POST ---------------------
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var ant = await _context.Antrenorler.FindAsync(id);
+            if (ant == null)
+                return NotFound();
+
+            _context.Antrenorler.Remove(ant);
+            await _context.SaveChangesAsync();
+            TempData["Delete"] = "Antrenör başarıyla silindi!";
+            return RedirectToAction("Index");
+        }
     }
 }

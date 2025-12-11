@@ -1,24 +1,70 @@
 ﻿@model Antrenor
 
-<h2>Antrenör Düzenle</h2>
-<hr />
+@{
+    ViewData["Title"] = "Antrenör Düzenle";
+}
 
-<form asp-action="Edit" method="post" class="w-50">
-    <input type="hidden" asp-for="Id" />
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0"><i class="fas fa-edit me-2"></i>Antrenör Düzenle</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-    <div class="mb-3">
-        <label class="form-label">Ad Soyad</label>
-        <input asp-for="AdSoyad" class="form-control" required />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Uzmanlık Alanı</label>
-        <input asp-for="Uzmanlik" class="form-control" required />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Fotoğraf URL</label>
-        <input asp-for="FotografUrl" class="form-control" />
-    </div>
+                        <div class="mb-3">
+                            <label asp-for="AdSoyad" class="form-label">
+                                <i class="fas fa-user me-2"></i>Ad Soyad
+                            </label>
+                            <input asp-for="AdSoyad" class="form-control" required />
+                            <span asp-validation-for="AdSoyad" class="text-danger"></span>
+                        </div>
 
-    <button type="submit" class="btn btn-primary">Güncelle</button>
-    <a href="/Admin/Antrenor/Index" class="btn btn-secondary">İptal</a>
-</form>
+                        <div class="mb-3">
+                            <label asp-for="Uzmanlik" class="form-label">
+                                <i class="fas fa-dumbbell me-2"></i>Uzmanlık Alanı
+                            </label>
+                            <input asp-for="Uzmanlik" class="form-control" required />
+                            <span asp-validation-for="Uzmanlik" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="FotografUrl" class="form-label">
+                                <i class="fas fa-image me-2"></i>Fotoğraf URL
+                            </label>
+                            <input asp-for="FotografUrl" class="form-control" />
+                            <span asp-validation-for="FotografUrl" class="text-danger"></span>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.FotografUrl))
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">Mevcut Fotoğraf</label>
+                                <div>
+                                    <img src="@Model.FotografUrl" alt="@Model.AdSoyad" class="img-thumbnail" style="max-width: 200px;" />
+                                </div>
+                            </div>
+                        }
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Geri Dön
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-2"></i>Güncelle
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

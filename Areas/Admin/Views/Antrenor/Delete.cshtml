@@ -1,12 +1,54 @@
 ﻿@model Antrenor
 
-<h2>Antrenör Sil</h2>
-<div class="alert alert-danger">
-    <strong>Dikkat!</strong> @Model.AdSoyad isimli antrenörü silmek üzeresiniz. Bu işlem geri alınamaz.
-</div>
+@{
+    ViewData["Title"] = "Antrenör Sil";
+}
 
-<form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Evet, Sil</button>
-    <a href="/Admin/Antrenor/Index" class="btn btn-secondary">İptal</a>
-</form>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0"><i class="fas fa-trash me-2"></i>Antrenör Sil</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Dikkat!</strong> Bu antrenörü silmek istediğinize emin misiniz? Bu işlem geri alınamaz.
+                    </div>
+
+                    <dl class="row">
+                        <dt class="col-sm-4"><i class="fas fa-hashtag me-2"></i>ID:</dt>
+                        <dd class="col-sm-8">@Model.Id</dd>
+
+                        <dt class="col-sm-4"><i class="fas fa-user me-2"></i>Ad Soyad:</dt>
+                        <dd class="col-sm-8">@Model.AdSoyad</dd>
+
+                        <dt class="col-sm-4"><i class="fas fa-dumbbell me-2"></i>Uzmanlık:</dt>
+                        <dd class="col-sm-8">@Model.Uzmanlik</dd>
+
+                        @if (!string.IsNullOrEmpty(Model.FotografUrl))
+                        {
+                            <dt class="col-sm-4"><i class="fas fa-image me-2"></i>Fotoğraf:</dt>
+                            <dd class="col-sm-8">
+                                <img src="@Model.FotografUrl" alt="@Model.AdSoyad" class="img-thumbnail" style="max-width: 150px;" />
+                            </dd>
+                        }
+                    </dl>
+
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Geri Dön
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>Evet, Sil
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

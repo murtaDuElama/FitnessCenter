@@ -62,35 +62,42 @@ namespace FitnessCenter.Controllers
         {
             return View();
         }
-
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
-            if (!ModelState.IsValid)
-                return View(model);
-
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
-
-            if (result.Succeeded)
+            if (ModelState.IsValid)
             {
-                // Giriş yapan kullanıcıyı bul
-                var user = await _userManager.FindByEmailAsync(model.Email);
+                var result = await _signInManager.PasswordSignInAsync(
+                    model.Email,
+                    model.Password,
+                    model.RememberMe,
+                    lockoutOnFailure: false
+                );
 
-                // Kullanıcının "Admin" rolü olup olmadığını kontrol et
-                if (await _userManager.IsInRoleAsync(user, "Admin"))
+                if (result.Succeeded)
                 {
-                    // Admin ise -> Admin Paneline git
-                    return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+                    var user = await _userManager.FindByEmailAsync(model.Email);
+
+                    // Admin kontrolü
+                    if (await _userManager.IsInRoleAsync(user, "Admin"))
+                    {
+                        return RedirectToAction("Index", "Home", new { area = "Admin" });
+                    }
+
+                    // Normal kullanıcı
+                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
+
+                    return RedirectToAction("Index", "Home");
                 }
 
-                // Normal kullanıcı ise -> Anasayfaya git
-                return RedirectToAction("Index", "Home");
+                ModelState.AddModelError(string.Empty, "Geçersiz giriş denemesi.");
             }
 
-            ModelState.AddModelError("", "Geçersiz email veya şifre.");
             return View(model);
         }
-
         // GET: /Account/Logout
         public async Task<IActionResult> Logout()
         {

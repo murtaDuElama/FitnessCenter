@@ -1,13 +1,13 @@
 ﻿using FitnessCenter.Data;
-using FitnessCenter.Models; // Hizmet modelini tanimasi icin gerekli
+using FitnessCenter.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitnessCenter.Areas.Admin.Controllers
 {
-    [Area("Admin")] // Admin klasorunde oldugunu belirtir
-    [Authorize(Roles = "Admin")] // Sadece Admin yetkisi olanlar erisebilir
+    [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class HizmetController : Controller
     {
         private readonly AppDbContext _context;
@@ -24,6 +24,16 @@ namespace FitnessCenter.Areas.Admin.Controllers
             return View(hizmetler);
         }
 
+        // --------------------- DETAILS ---------------------
+        public async Task<IActionResult> Details(int id)
+        {
+            var hizmet = await _context.Hizmetler.FindAsync(id);
+            if (hizmet == null)
+                return NotFound();
+
+            return View(hizmet);
+        }
+
         // --------------------- CREATE GET ---------------------
         public IActionResult Create()
         {
@@ -32,7 +42,7 @@ namespace FitnessCenter.Areas.Admin.Controllers
 
         // --------------------- CREATE POST ---------------------
         [HttpPost]
-        [ValidateAntiForgeryToken] // Güvenlik icin eklenmesi iyi olur
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Hizmet h)
         {
             if (!ModelState.IsValid)
@@ -40,6 +50,7 @@ namespace FitnessCenter.Areas.Admin.Controllers
 
             _context.Hizmetler.Add(h);
             await _context.SaveChangesAsync();
+            TempData["Success"] = "Hizmet başarıyla eklendi!";
             return RedirectToAction("Index");
         }
 
@@ -63,6 +74,7 @@ namespace FitnessCenter.Areas.Admin.Controllers
 
             _context.Hizmetler.Update(h);
             await _context.SaveChangesAsync();
+            TempData["Success"] = "Hizmet başarıyla güncellendi!";
             return RedirectToAction("Index");
         }
 
@@ -87,17 +99,8 @@ namespace FitnessCenter.Areas.Admin.Controllers
 
             _context.Hizmetler.Remove(hizmet);
             await _context.SaveChangesAsync();
+            TempData["Delete"] = "Hizmet başarıyla silindi!";
             return RedirectToAction("Index");
-        }
-
-        // --------------------- DETAILS (Asenkron Yapildi) ---------------------
-        public async Task<IActionResult> Details(int id)
-        {
-            var hizmet = await _context.Hizmetler.FindAsync(id);
-            if (hizmet == null)
-                return NotFound();
-
-            return View(hizmet);
         }
     }
 }

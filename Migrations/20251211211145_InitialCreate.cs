@@ -3,14 +3,29 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace FitnessCenter.Migrations.AuthDb
+namespace FitnessCenter.Migrations
 {
     /// <inheritdoc />
-    public partial class IdentityInit : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Antrenorler",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AdSoyad = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Uzmanlik = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FotografUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Antrenorler", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -30,6 +45,7 @@ namespace FitnessCenter.Migrations.AuthDb
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    AdSoyad = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -48,6 +64,21 @@ namespace FitnessCenter.Migrations.AuthDb
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Hizmetler",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Ad = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Sure = table.Column<int>(type: "int", nullable: false),
+                    Ucret = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Hizmetler", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -156,6 +187,43 @@ namespace FitnessCenter.Migrations.AuthDb
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Randevular",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AdSoyad = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    HizmetId = table.Column<int>(type: "int", nullable: false),
+                    AntrenorId = table.Column<int>(type: "int", nullable: false),
+                    Tarih = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Saat = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Onaylandi = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Randevular", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Randevular_Antrenorler_AntrenorId",
+                        column: x => x.AntrenorId,
+                        principalTable: "Antrenorler",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Randevular_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Randevular_Hizmetler_HizmetId",
+                        column: x => x.HizmetId,
+                        principalTable: "Hizmetler",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -194,6 +262,21 @@ namespace FitnessCenter.Migrations.AuthDb
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Randevular_AntrenorId",
+                table: "Randevular",
+                column: "AntrenorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Randevular_HizmetId",
+                table: "Randevular",
+                column: "HizmetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Randevular_UserId",
+                table: "Randevular",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -215,10 +298,19 @@ namespace FitnessCenter.Migrations.AuthDb
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Randevular");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "Antrenorler");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Hizmetler");
         }
     }
 }
