@@ -12,9 +12,15 @@ namespace FitnessCenter.Controllers
         {
             _logger = logger;
         }
-
         public IActionResult Index()
         {
+            if (User.Identity != null &&
+                User.Identity.IsAuthenticated &&
+                User.IsInRole("Admin"))
+            {
+                return RedirectToAction("Index", "Home", new { area = "Admin" });
+            }
+
             return View();
         }
 

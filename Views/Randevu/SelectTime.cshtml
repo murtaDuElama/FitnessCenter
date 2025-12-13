@@ -1,15 +1,40 @@
-﻿@model IEnumerable<string>
+﻿@model List<string>
 
-<h2>Müsait Saatler</h2>
-
-@foreach (var s in Model)
-{
-    <div class="card p-2 my-2">
-        <h5>@s</h5>
-        <a class="btn btn-success"
-           href="/Randevu/Create?hizmetId=@ViewBag.HizmetId&antrenorId=@ViewBag.AntrenorId&hour=@s">
-            Bu Saati Seç
-        </a>
-
-    </div>
+@{
+    ViewData["Title"] = "Saat Seç";
+    int hizmetId = (int)ViewBag.HizmetId;
+    int antrenorId = (int)ViewBag.AntrenorId;
 }
+
+<h2 class="mb-4">Randevu Saati Seç</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<form asp-action="Create"
+      asp-controller="Randevu"
+      method="post">
+
+    <!-- GİZLİ ALANLAR (ÇOK KRİTİK) -->
+    <input type="hidden" name="hizmetId" value="@hizmetId" />
+    <input type="hidden" name="antrenorId" value="@antrenorId" />
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Müsait Saatler</label>
+
+        <select name="saat" class="form-select" required>
+            <option value="">Saat Seçiniz</option>
+            @foreach (var saat in Model)
+            {
+                <option value="@saat">@saat</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        Randevu Oluştur
+    </button>
+
+</form>

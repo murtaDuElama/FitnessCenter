@@ -1,12 +1,12 @@
-﻿@model List<Randevu>
+@model List<Randevu>
 
 @{
-    ViewData["Title"] = "Randevu Yönetimi";
+    ViewData["Title"] = "Randevular";
 }
 
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="fas fa-calendar-check me-2"></i>Randevu Yönetimi</h2>
+        <h2><i class="fas fa-calendar-check me-2"></i>Randevular</h2>
         <div>
             <span class="badge bg-primary me-2">Toplam: @Model.Count</span>
             <span class="badge bg-success me-2">Onaylı: @Model.Count(r => r.Onaylandi)</span>
@@ -43,7 +43,7 @@
                             <th><i class="fas fa-calendar me-2"></i>Tarih</th>
                             <th><i class="fas fa-clock me-2"></i>Saat</th>
                             <th class="text-center"><i class="fas fa-check-circle me-2"></i>Durum</th>
-                            <th class="text-center"><i class="fas fa-cog me-2"></i>İşlemler</th>
+                            <th class="text-center">Sil</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -106,38 +106,17 @@
                                             </span>
                                         }
                                     </td>
+
                                     <td class="text-center">
-                                        <div class="btn-group" role="group">
-                                            @if (!item.Onaylandi)
-                                            {
-                                                <form asp-action="Onayla" asp-route-id="@item.Id" method="post" class="d-inline">
-                                                    @Html.AntiForgeryToken()
-                                                    <button type="submit" class="btn btn-sm btn-success" title="Onayla" onclick="return confirm('Bu randevuyu onaylamak istediğinize emin misiniz?')">
-                                                        <i class="fas fa-check"></i>
-                                                    </button>
-                                                </form>
-                                            }
-                                            else
-                                            {
-                                                <form asp-action="IptalEt" asp-route-id="@item.Id" method="post" class="d-inline">
-                                                    @Html.AntiForgeryToken()
-                                                    <button type="submit" class="btn btn-sm btn-warning" title="İptal Et" onclick="return confirm('Bu randevuyu iptal etmek istediğinize emin misiniz?')">
-                                                        <i class="fas fa-times"></i>
-                                                    </button>
-                                                </form>
-                                            }
-
-                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-info" title="Düzenle">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-
-                                            <form asp-action="Sil" asp-route-id="@item.Id" method="post" class="d-inline">
-                                                @Html.AntiForgeryToken()
-                                                <button type="submit" class="btn btn-sm btn-danger" title="Sil" onclick="return confirm('Bu randevuyu silmek istediğinize emin misiniz?')">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
+                                        <form asp-action="Sil" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button type="submit" class="btn btn-sm btn-danger"
+                                                    title="Sil"
+                                                    onclick="return confirm('Bu randevuyu silmek istediğinize emin misiniz?');">
+                                                <i class="fas fa-trash me-1"></i>Sil
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             }
@@ -161,10 +140,6 @@
 <style>
     .table th {
         white-space: nowrap;
-    }
-
-    .btn-group .btn {
-        margin: 0 2px;
     }
 
     .table-warning {

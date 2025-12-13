@@ -3,13 +3,18 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fitness Center</title>
+    <title>@ViewData["Title"] - Fitness Center</title>
+
+    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Site CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 
 <body>
 
+    <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
 
@@ -23,61 +28,84 @@
 
                 <ul class="navbar-nav ms-auto">
 
-                    <li class="nav-item"><a class="nav-link" href="/Hizmet/Index">Hizmetler</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Antrenor/Index">Antrenörler</a></li>
+                    <!-- PUBLIC -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Hizmet/Index">Hizmetler</a>
+                    </li>
 
-                    @if (!User.IsInRole("Admin"))
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Antrenor/Index">Antrenörler</a>
+                    </li>
+
+                    <!-- ADMIN ÜST MENÜ -->
+                    @if (User.IsInRole("Admin"))
                     {
-                        <li class="nav-item"><a class="nav-link" href="/Ai/Index">AI Öneri</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Admin/Randevu/Index">
+                                Randevular
+                            </a>
+                        </li>
                     }
 
+                    <!-- USER -->
+                    @if (!User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Ai/Index">AI Öneri</a>
+                        </li>
+                    }
+
+                    <!-- AUTH -->
                     @if (!User.Identity.IsAuthenticated)
                     {
-                        <li class="nav-item"><a class="nav-link" href="/Account/Login">Giriş</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Account/Register">Kayıt Ol</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Account/Login">Giriş</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Account/Register">Kayıt Ol</a>
+                        </li>
                     }
                     else
                     {
+                        <!-- USER ACTIONS -->
                         @if (!User.IsInRole("Admin"))
                         {
-                            <li class="nav-item"><a class="nav-link" href="/Randevu/SelectService">Randevu Al</a></li>
-
+                            <li class="nav-item">
+                                <a class="nav-link" href="/Randevu/SelectService">Randevu Al</a>
+                            </li>
 
                             <li class="nav-item">
                                 <a class="nav-link" href="/Randevu/MyRandevus">Randevularım</a>
                             </li>
                         }
 
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle bg-danger text-white rounded px-2 mx-2" href="#" role="button" data-bs-toggle="dropdown">
-                                    Admin Panel
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="/Admin/Home/Index">Ana Sayfa</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="/Admin/Hizmet/Index">Hizmet Yönetimi</a></li>
-                                    <li><a class="dropdown-item" href="/Admin/Antrenor/Index">Antrenör Yönetimi</a></li>
-                                    <li><a class="dropdown-item" href="/Admin/Randevu/Index">Randevu Yönetimi</a></li>
-                                </ul>
-                            </li>
-                        }
-
+                        <!-- USER INFO -->
                         <li class="nav-item d-flex align-items-center">
-                            <span class="text-light ms-2 me-2">Merhaba, @User.Identity.Name</span>
+                            <span class="text-light ms-2 me-2">
+                                Merhaba, @User.Identity.Name
+                            </span>
                         </li>
 
+                        <!-- DELETE ACCOUNT (USER) -->
                         @if (!User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <form asp-controller="Account" asp-action="DeleteAccount" method="post" onsubmit="return confirm('Hesabınızı kalıcı olarak silmek istediğinize emin misiniz? Bu işlem geri alınamaz!');" class="d-flex align-items-center h-100">
+                                <form asp-controller="Account"
+                                      asp-action="DeleteAccount"
+                                      method="post"
+                                      onsubmit="return confirm('Hesabınızı kalıcı olarak silmek istediğinize emin misiniz?');"
+                                      class="d-flex align-items-center h-100">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="nav-link btn btn-link text-secondary" style="text-decoration:none;">Hesap Sil</button>
+                                    <button type="submit"
+                                            class="nav-link btn btn-link text-secondary"
+                                            style="text-decoration:none;">
+                                        Hesap Sil
+                                    </button>
                                 </form>
                             </li>
                         }
 
+                        <!-- LOGOUT -->
                         <li class="nav-item">
                             <a class="nav-link text-danger" href="/Account/Logout">Çıkış Yap</a>
                         </li>
@@ -89,19 +117,20 @@
         </div>
     </nav>
 
+    <!-- CONTENT -->
     <div class="container mt-4 mb-5" style="min-height: 80vh;">
         @RenderBody()
     </div>
 
+    <!-- FOOTER -->
     <footer class="bg-dark text-white text-center p-3 mt-auto">
         <div class="container">
             <p class="mb-0">© 2025 Fitness Center Yönetim Sistemi</p>
         </div>
     </footer>
 
+    <!-- JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 

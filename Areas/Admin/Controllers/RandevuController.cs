@@ -29,37 +29,6 @@ namespace FitnessCenter.Areas.Admin.Controllers
             return View(randevular);
         }
 
-        // --------------------- EDIT GET ---------------------
-        public async Task<IActionResult> Edit(int id)
-        {
-            var randevu = await _context.Randevular
-                .Include(r => r.Hizmet)
-                .Include(r => r.Antrenor)
-                .Include(r => r.User)
-                .FirstOrDefaultAsync(r => r.Id == id);
-
-            if (randevu == null)
-                return NotFound();
-
-            return View(randevu);
-        }
-
-        // --------------------- EDIT POST ---------------------
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, bool Onaylandi)
-        {
-            var randevu = await _context.Randevular.FindAsync(id);
-            if (randevu == null)
-                return NotFound();
-
-            randevu.Onaylandi = Onaylandi;
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = "Randevu durumu güncellendi!";
-            return RedirectToAction(nameof(Index));
-        }
-
         // --------------------- ONAYLA ---------------------
         [HttpPost]
         [ValidateAntiForgeryToken]

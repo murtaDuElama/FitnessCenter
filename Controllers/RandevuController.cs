@@ -68,11 +68,18 @@ namespace FitnessCenter.Controllers
 
             return View(musait);
         }
-
+        
         // ------------------ 4) RANDEVU OLUŞTUR ------------------
         [Authorize]
-        public async Task<IActionResult> Create(int hizmetId, int antrenorId, string hour)
+        [HttpPost]
+        public async Task<IActionResult> Create(int hizmetId, int antrenorId, string saat)
         {
+            if (string.IsNullOrWhiteSpace(saat))
+            {
+                TempData["Error"] = "Lütfen bir saat seçiniz.";
+                return RedirectToAction("SelectTime", new { hizmetId, antrenorId });
+            }
+
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
                 return Unauthorized();
@@ -81,7 +88,7 @@ namespace FitnessCenter.Controllers
             bool dolu = await _context.Randevular.AnyAsync(x =>
                 x.AntrenorId == antrenorId &&
                 x.Tarih.Date == DateTime.Today &&
-                x.Saat == hour);
+                x.Saat == saat);
 
             if (dolu)
             {
@@ -93,7 +100,7 @@ namespace FitnessCenter.Controllers
             bool kullaniciDolu = await _context.Randevular.AnyAsync(x =>
                 x.UserId == user.Id &&
                 x.Tarih.Date == DateTime.Today &&
-                x.Saat == hour);
+                x.Saat == saat);
 
             if (kullaniciDolu)
             {
@@ -107,7 +114,7 @@ namespace FitnessCenter.Controllers
                 HizmetId = hizmetId,
                 AntrenorId = antrenorId,
                 Tarih = DateTime.Today,
-                Saat = hour,
+                Saat = saat,
                 Onaylandi = true,
                 AdSoyad = user.AdSoyad ?? user.UserName
             };
@@ -118,6 +125,7 @@ namespace FitnessCenter.Controllers
             TempData["Success"] = "Randevunuz başarıyla oluşturuldu.";
             return RedirectToAction("MyRandevus");
         }
+
 
         // ------------------ 5) RANDEVULARIM ------------------
         public async Task<IActionResult> MyRandevus()

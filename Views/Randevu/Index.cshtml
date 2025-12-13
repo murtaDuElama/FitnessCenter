@@ -7,11 +7,15 @@
     <thead>
         <tr>
             <th>Ad Soyad</th>
-            <th>Telefon</th>
             <th>Hizmet</th>
             <th>Antrenör</th>
             <th>Tarih</th>
             <th>Saat</th>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <th>İşlemler</th>
+            }
         </tr>
     </thead>
 
@@ -24,6 +28,21 @@
                 <td>@r.Antrenor.AdSoyad</td>
                 <td>@r.Tarih.ToShortDateString()</td>
                 <td>@r.Saat</td>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <td>
+                        <a href="/Admin/Randevu/Edit/@r.Id"
+                           class="btn btn-warning btn-sm">
+                            Düzenle
+                        </a>
+
+                        <a href="/Admin/Randevu/Delete/@r.Id"
+                           class="btn btn-danger btn-sm">
+                            Sil
+                        </a>
+                    </td>
+                }
             </tr>
         }
     </tbody>

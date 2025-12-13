@@ -1,4 +1,4 @@
-﻿@model List<Hizmet>
+@model List<Hizmet>
 
 @{
     ViewData["Title"] = "Hizmet Yönetimi";
@@ -38,7 +38,7 @@
                             <th><i class="fas fa-tag me-2"></i>Hizmet Adı</th>
                             <th><i class="fas fa-clock me-2"></i>Süre</th>
                             <th><i class="fas fa-lira-sign me-2"></i>Ücret</th>
-                            <th class="text-center"><i class="fas fa-cog me-2"></i>İşlemler</th>
+                            <th class="text-center">Düzenle</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -59,17 +59,9 @@
                                         <span class="badge bg-success">@item.Ucret ₺</span>
                                     </td>
                                     <td class="text-center">
-                                        <div class="btn-group" role="group">
-                                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info" title="Detaylar">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning" title="Düzenle">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger" title="Sil">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
-                                        </div>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning" title="Düzenle">
+                                            <i class="fas fa-edit me-1"></i>Düzenle
+                                        </a>
                                     </td>
                                 </tr>
                             }
@@ -93,9 +85,5 @@
 <style>
     .table th {
         white-space: nowrap;
-    }
-
-    .btn-group .btn {
-        margin: 0 2px;
     }
 </style>
