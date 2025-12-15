@@ -22,14 +22,28 @@
                             <input asp-for="AdSoyad" class="form-control" placeholder="Örn: Ahmet Yılmaz" required />
                             <span asp-validation-for="AdSoyad" class="text-danger"></span>
                         </div>
-
                         <div class="mb-3">
-                            <label asp-for="Uzmanlik" class="form-label">
-                                <i class="fas fa-dumbbell me-2"></i>Uzmanlık Alanı
+                            <label asp-for="Uzmanlik" class="form-label fw-bold">
+                                Uzmanlık Alanı
                             </label>
-                            <input asp-for="Uzmanlik" class="form-control" placeholder="Örn: Fitness, Yoga, Pilates" required />
+
+                            <select asp-for="Uzmanlik"
+                                    class="form-select">
+                                <option value="">-- Hizmet Seçiniz --</option>
+
+                                @foreach (var h in (List<string>)ViewBag.Hizmetler)
+                                {
+                                    <option value="@h">@h</option>
+                                }
+                            </select>
+
                             <span asp-validation-for="Uzmanlik" class="text-danger"></span>
+
+                            <small class="text-muted">
+                                Antrenör yalnızca sistemde tanımlı bir hizmette uzman olabilir.
+                            </small>
                         </div>
+
 
                         <div class="mb-3">
                             <label asp-for="FotografUrl" class="form-label">

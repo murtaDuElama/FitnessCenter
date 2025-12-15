@@ -1,14 +1,12 @@
-@model List<Randevu>
+﻿@model List<Randevu>
 
 @{
-    ViewData["Title"] = "Randevular";
+    ViewData["Title"] = "Randevu Yönetimi";
 }
 
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>
-            <i class="fas fa-calendar-check me-2"></i>Randevular
-        </h2>
+        <h2><i class="fas fa-calendar-check me-2"></i>Randevu Yönetimi</h2>
         <div>
             <span class="badge bg-primary me-2">Toplam: @Model.Count</span>
             <span class="badge bg-success me-2">Onaylı: @Model.Count(r => r.Onaylandi)</span>
@@ -16,14 +14,13 @@
         </div>
     </div>
 
-    @if (TempData["Success"] != null)
+    @if (TempData["Delete"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show">
-            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Delete"]
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
-
     @if (TempData["Error"] != null)
     {
         <div class="alert alert-danger alert-dismissible fade show">
@@ -45,10 +42,10 @@
                             <th>Tarih</th>
                             <th>Saat</th>
                             <th class="text-center">Durum</th>
-                            <th class="text-center">İşlem</th>
+                            <th class="text-center">Düzenle</th>
+                            <th class="text-center">Sil</th>
                         </tr>
                     </thead>
-
                     <tbody>
                         @if (Model != null && Model.Any())
                         {
@@ -56,20 +53,11 @@
                             {
                                 <tr class="@(item.Onaylandi ? "" : "table-warning")">
                                     <td><strong>@item.Id</strong></td>
-
                                     <td>@(item.User?.UserName ?? "-")</td>
-
                                     <td>@(item.Antrenor?.AdSoyad ?? "-")</td>
-
-                                    <td>
-                                        <span class="badge bg-primary">
-                                            @(item.Hizmet?.Ad ?? "-")
-                                        </span>
-                                    </td>
-
+                                    <td><span class="badge bg-primary">@(item.Hizmet?.Ad ?? "-")</span></td>
                                     <td>@item.Tarih.ToString("dd.MM.yyyy")</td>
                                     <td>@item.Saat</td>
-
                                     <td class="text-center">
                                         @if (item.Onaylandi)
                                         {
@@ -80,15 +68,28 @@
                                             <span class="badge bg-warning text-dark">Bekliyor</span>
                                         }
                                     </td>
-
                                     <td class="text-center">
-                                        <!-- ÖZET SAYFA: Düzenle butonu TAM YÖNETİME (navbar randevular) götürsün -->
                                         <a asp-area="Admin"
                                            asp-controller="Randevu"
-                                           asp-action="Manage"
+                                           asp-action="Edit"
+                                           asp-route-id="@item.Id"
                                            class="btn btn-warning btn-sm">
                                             <i class="fas fa-edit me-1"></i>Düzenle
                                         </a>
+                                    </td>
+                                    <td class="text-center">
+                                        <form asp-area="Admin"
+                                              asp-controller="Randevu"
+                                              asp-action="Sil"
+                                              method="post"
+                                              class="d-inline"
+                                              onsubmit="return confirm('Bu randevuyu silmek istediğinize emin misiniz?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-trash me-1"></i>Sil
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             }
@@ -96,14 +97,12 @@
                         else
                         {
                             <tr>
-                                <td colspan="8" class="text-center text-muted py-4">
-                                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                <td colspan="9" class="text-center text-muted py-4">
                                     Henüz randevu bulunmuyor.
                                 </td>
                             </tr>
                         }
                     </tbody>
-
                 </table>
             </div>
         </div>

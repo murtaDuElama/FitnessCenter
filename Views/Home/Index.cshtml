@@ -1,8 +1,24 @@
 ﻿<div class="text-center">
     <h1 class="display-4">Fitness Center Yönetim Sistemi</h1>
     <p class="lead">Randevu al, antrenör seç, kişisel programını oluştur!</p>
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        <a asp-controller="Randevu"
+           asp-action="SelectService"
+           class="btn btn-primary btn-lg">
+            Randevu Al
+        </a>
+    }
+    else
+    {
+        <a asp-controller="Account"
+           asp-action="Login"
+           class="btn btn-primary btn-lg">
+            Randevu Al
+        </a>
+    }
 
-    <a href="/Randevu/Create" class="btn btn-primary btn-lg mt-3">Randevu Al</a>
+
 </div>
 
 <hr>

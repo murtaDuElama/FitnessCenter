@@ -32,7 +32,25 @@
 
                         @if (!User.IsInRole("Admin"))
                         {
-                            <a href="/Randevu/Create" class="btn btn-lg btn-outline-primary w-100 mb-2">Randevu Al</a>
+                            @if (User.Identity != null && User.Identity.IsAuthenticated)
+                            {
+                                <a asp-controller="Randevu"
+                                   asp-action="SelectTrainer"
+                                   asp-route-hizmetId="@h.Id"
+                                   class="btn btn-outline-primary">
+                                    Randevu Al
+                                </a>
+                            }
+                                        else
+                            {
+                                <a asp-controller="Account"
+                                   asp-action="Login"
+                                   class="btn btn-outline-primary">
+                                    Randevu Al
+                                </a>
+                            }
+
+
                         }
 
                         @if (User.IsInRole("Admin"))

@@ -37,22 +37,43 @@ namespace FitnessCenter.Areas.Admin.Controllers
         // --------------------- CREATE GET ---------------------
         public IActionResult Create()
         {
+            ViewBag.Hizmetler = _context.Hizmetler
+                .OrderBy(h => h.Ad)
+                .Select(h => h.Ad)
+                .ToList();
+
             return View();
         }
-
+        
         // --------------------- CREATE POST ---------------------
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Antrenor a)
+        public async Task<IActionResult> Create(Antrenor antrenor)
         {
-            if (!ModelState.IsValid)
-                return View(a);
+            ViewBag.Hizmetler = _context.Hizmetler
+                .OrderBy(h => h.Ad)
+                .Select(h => h.Ad)
+                .ToList();
 
-            _context.Antrenorler.Add(a);
+            if (string.IsNullOrWhiteSpace(antrenor.Uzmanlik))
+            {
+                ModelState.AddModelError("Uzmanlik", "Lütfen bir uzmanlık alanı seçiniz.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(antrenor);
+            }
+
+            _context.Antrenorler.Add(antrenor);
             await _context.SaveChangesAsync();
-            TempData["Success"] = "Antrenör başarıyla eklendi!";
+
+            TempData["Success"] = "Antrenör başarıyla eklendi.";
             return RedirectToAction("Index");
         }
+
+
 
         // --------------------- EDIT GET ---------------------
         public async Task<IActionResult> Edit(int id)

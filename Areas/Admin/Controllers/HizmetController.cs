@@ -39,20 +39,30 @@ namespace FitnessCenter.Areas.Admin.Controllers
         {
             return View();
         }
-
-        // --------------------- CREATE POST ---------------------
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Hizmet h)
+        public async Task<IActionResult> Create(Hizmet hizmet)
         {
             if (!ModelState.IsValid)
-                return View(h);
+                return View(hizmet);
 
-            _context.Hizmetler.Add(h);
+            // 🔴 AYNI İSİMDE HİZMET VAR MI?
+            bool varMi = await _context.Hizmetler
+                .AnyAsync(h => h.Ad.ToLower() == hizmet.Ad.ToLower());
+
+            if (varMi)
+            {
+                ModelState.AddModelError("Ad", "Bu isimde bir hizmet zaten mevcut.");
+                return View(hizmet);
+            }
+
+            _context.Hizmetler.Add(hizmet);
             await _context.SaveChangesAsync();
-            TempData["Success"] = "Hizmet başarıyla eklendi!";
-            return RedirectToAction("Index");
+
+            TempData["Success"] = "Hizmet başarıyla eklendi.";
+            return RedirectToAction(nameof(Index));
         }
+
 
         // --------------------- EDIT GET ---------------------
         public async Task<IActionResult> Edit(int id)

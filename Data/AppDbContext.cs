@@ -14,5 +14,16 @@ namespace FitnessCenter.Data
         public DbSet<Antrenor> Antrenorler { get; set; }
         public DbSet<Hizmet> Hizmetler { get; set; }
         public DbSet<Randevu> Randevular { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Hizmet>()
+                .HasIndex(h => h.Ad)
+                .IsUnique();
+        }
+
     }
+
 }
