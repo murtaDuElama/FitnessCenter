@@ -1,4 +1,5 @@
-﻿@model FitnessCenter.Models.AIResponseModel
+﻿@using System.Linq
+@model FitnessCenter.Models.AIResponseModel
 @{
     ViewData["Title"] = "AI Önerisi";
 }
@@ -16,8 +17,23 @@
 }
 else
 {
-    <div class="row">
-        <div class="col-md-6 mb-4">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">Vücut Analizi</div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>BMI:</strong> @Model.Bmi</p>
+                    <p class="mb-2"><strong>Yorum:</strong> @Model.BmiCategory</p>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.PersonalizedTip))
+                    {
+                        <div class="alert alert-secondary mb-0">@Model.PersonalizedTip</div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
             <div class="card h-100">
                 <div class="card-header bg-primary text-white">Egzersiz Planı</div>
                 <div class="card-body">
@@ -38,7 +54,7 @@ else
             </div>
         </div>
 
-        <div class="col-md-6 mb-4">
+        <div class="col-md-4">
             <div class="card h-100">
                 <div class="card-header bg-success text-white">Beslenme Önerisi</div>
                 <div class="card-body">

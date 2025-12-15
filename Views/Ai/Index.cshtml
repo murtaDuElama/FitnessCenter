@@ -4,7 +4,7 @@
 }
 
 <h2 class="mb-4">AI Destekli Fitness Öneri Sistemi</h2>
-<p class="text-muted">Hedefinizi ve günlük ayırabileceğiniz süreyi girin, sistem size kişiselleştirilmiş bir plan oluştursun.</p>
+<p class="text-muted">Hedefinizi ve temel vücut ölçümlerinizi girin, sistem yapay zekâ destekli kişiselleştirilmiş bir plan oluştursun.</p>
 <hr />
 
 <form asp-action="Analyze" method="post" class="row g-3">
@@ -32,6 +32,41 @@
             <option value="Yüksek">Yüksek</option>
         </select>
         <span asp-validation-for="Intensity" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="BodyType" class="form-label"></label>
+        <select asp-for="BodyType" class="form-select">
+            <option value="">Seçiniz</option>
+            <option value="Ektomorf">Ektomorf</option>
+            <option value="Mezomorf">Mezomorf</option>
+            <option value="Endomorf">Endomorf</option>
+        </select>
+        <span asp-validation-for="BodyType" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="HeightCm" class="form-label"></label>
+        <div class="input-group">
+            <input asp-for="HeightCm" type="number" class="form-control" step="0.1" placeholder="Boy" />
+            <span class="input-group-text">cm</span>
+        </div>
+        <span asp-validation-for="HeightCm" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="WeightKg" class="form-label"></label>
+        <div class="input-group">
+            <input asp-for="WeightKg" type="number" class="form-control" step="0.1" placeholder="Kilo" />
+            <span class="input-group-text">kg</span>
+        </div>
+        <span asp-validation-for="WeightKg" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="Age" class="form-label"></label>
+        <input asp-for="Age" type="number" class="form-control" min="12" max="100" />
+        <span asp-validation-for="Age" class="text-danger"></span>
     </div>
 
     <div class="col-md-6">
