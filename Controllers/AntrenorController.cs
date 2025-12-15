@@ -1,23 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using FitnessCenter.Data;
-using FitnessCenter.Models;
+using FitnessCenter.Repositories;
 
 namespace FitnessCenter.Controllers
 {
     public class AntrenorController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IAntrenorRepository _antrenorRepository;
 
-        public AntrenorController(AppDbContext context)
+        public AntrenorController(IAntrenorRepository antrenorRepository)
         {
-            _context = context;
+            _antrenorRepository = antrenorRepository;
         }
 
         // Public antrenör listesi
         public async Task<IActionResult> Index()
         {
-            var antrenorler = await _context.Antrenorler.ToListAsync();
+            var antrenorler = await _antrenorRepository.GetAllAsync();
             return View(antrenorler);
         }
     }

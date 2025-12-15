@@ -1,8 +1,7 @@
-﻿using FitnessCenter.Data;
-using FitnessCenter.Models;
+﻿using FitnessCenter.Models;
+using FitnessCenter.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace FitnessCenter.Areas.Admin.Controllers
 {
@@ -10,24 +9,24 @@ namespace FitnessCenter.Areas.Admin.Controllers
     [Authorize(Roles = "Admin")]
     public class HizmetController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IHizmetRepository _hizmetRepository;
 
-        public HizmetController(AppDbContext context)
+        public HizmetController(IHizmetRepository hizmetRepository)
         {
-            _context = context;
+            _hizmetRepository = hizmetRepository;
         }
 
         // --------------------- LISTE ---------------------
         public async Task<IActionResult> Index()
         {
-            var hizmetler = await _context.Hizmetler.ToListAsync();
+            var hizmetler = await _hizmetRepository.GetAllAsync();
             return View(hizmetler);
         }
 
         // --------------------- DETAILS ---------------------
         public async Task<IActionResult> Details(int id)
         {
-            var hizmet = await _context.Hizmetler.FindAsync(id);
+            var hizmet = await _hizmetRepository.GetByIdAsync(id);
             if (hizmet == null)
                 return NotFound();
 
@@ -39,35 +38,25 @@ namespace FitnessCenter.Areas.Admin.Controllers
         {
             return View();
         }
+
+        // --------------------- CREATE POST ---------------------
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Hizmet hizmet)
+        public async Task<IActionResult> Create(Hizmet h)
         {
             if (!ModelState.IsValid)
-                return View(hizmet);
+                return View(h);
 
-            // 🔴 AYNI İSİMDE HİZMET VAR MI?
-            bool varMi = await _context.Hizmetler
-                .AnyAsync(h => h.Ad.ToLower() == hizmet.Ad.ToLower());
+            await _hizmetRepository.AddAsync(h);
 
-            if (varMi)
-            {
-                ModelState.AddModelError("Ad", "Bu isimde bir hizmet zaten mevcut.");
-                return View(hizmet);
-            }
-
-            _context.Hizmetler.Add(hizmet);
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = "Hizmet başarıyla eklendi.";
-            return RedirectToAction(nameof(Index));
+            TempData["Success"] = "Hizmet başarıyla eklendi!";
+            return RedirectToAction("Index");
         }
-
 
         // --------------------- EDIT GET ---------------------
         public async Task<IActionResult> Edit(int id)
         {
-            var hizmet = await _context.Hizmetler.FindAsync(id);
+            var hizmet = await _hizmetRepository.GetByIdAsync(id);
             if (hizmet == null)
                 return NotFound();
 
@@ -82,8 +71,12 @@ namespace FitnessCenter.Areas.Admin.Controllers
             if (!ModelState.IsValid)
                 return View(h);
 
-            _context.Hizmetler.Update(h);
-            await _context.SaveChangesAsync();
+            var mevcut = await _hizmetRepository.GetByIdAsync(h.Id);
+            if (mevcut == null)
+                return NotFound();
+
+            await _hizmetRepository.UpdateAsync(h);
+
             TempData["Success"] = "Hizmet başarıyla güncellendi!";
             return RedirectToAction("Index");
         }
@@ -91,7 +84,7 @@ namespace FitnessCenter.Areas.Admin.Controllers
         // --------------------- DELETE GET ---------------------
         public async Task<IActionResult> Delete(int id)
         {
-            var hizmet = await _context.Hizmetler.FindAsync(id);
+            var hizmet = await _hizmetRepository.GetByIdAsync(id);
             if (hizmet == null)
                 return NotFound();
 
@@ -103,12 +96,12 @@ namespace FitnessCenter.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var hizmet = await _context.Hizmetler.FindAsync(id);
+            var hizmet = await _hizmetRepository.GetByIdAsync(id);
             if (hizmet == null)
                 return NotFound();
 
-            _context.Hizmetler.Remove(hizmet);
-            await _context.SaveChangesAsync();
+            await _hizmetRepository.RemoveAsync(hizmet);
+
             TempData["Delete"] = "Hizmet başarıyla silindi!";
             return RedirectToAction("Index");
         }

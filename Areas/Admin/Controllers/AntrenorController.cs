@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
-using FitnessCenter.Data;
 using FitnessCenter.Models;
+using FitnessCenter.Repositories;
 
 namespace FitnessCenter.Areas.Admin.Controllers
 {
@@ -10,24 +9,24 @@ namespace FitnessCenter.Areas.Admin.Controllers
     [Authorize(Roles = "Admin")]
     public class AntrenorController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IAntrenorRepository _antrenorRepository;
 
-        public AntrenorController(AppDbContext context)
+        public AntrenorController(IAntrenorRepository antrenorRepository)
         {
-            _context = context;
+            _antrenorRepository = antrenorRepository;
         }
 
         // --------------------- LISTE ---------------------
         public async Task<IActionResult> Index()
         {
-            var liste = await _context.Antrenorler.ToListAsync();
+            var liste = await _antrenorRepository.GetAllAsync();
             return View(liste);
         }
 
         // --------------------- DETAILS ---------------------
         public async Task<IActionResult> Details(int id)
         {
-            var ant = await _context.Antrenorler.FindAsync(id);
+            var ant = await _antrenorRepository.GetByIdAsync(id);
             if (ant == null)
                 return NotFound();
 
@@ -37,48 +36,27 @@ namespace FitnessCenter.Areas.Admin.Controllers
         // --------------------- CREATE GET ---------------------
         public IActionResult Create()
         {
-            ViewBag.Hizmetler = _context.Hizmetler
-                .OrderBy(h => h.Ad)
-                .Select(h => h.Ad)
-                .ToList();
-
             return View();
         }
-        
-        // --------------------- CREATE POST ---------------------
 
+        // --------------------- CREATE POST ---------------------
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Antrenor antrenor)
+        public async Task<IActionResult> Create(Antrenor a)
         {
-            ViewBag.Hizmetler = _context.Hizmetler
-                .OrderBy(h => h.Ad)
-                .Select(h => h.Ad)
-                .ToList();
-
-            if (string.IsNullOrWhiteSpace(antrenor.Uzmanlik))
-            {
-                ModelState.AddModelError("Uzmanlik", "Lütfen bir uzmanlık alanı seçiniz.");
-            }
-
             if (!ModelState.IsValid)
-            {
-                return View(antrenor);
-            }
+                return View(a);
 
-            _context.Antrenorler.Add(antrenor);
-            await _context.SaveChangesAsync();
+            await _antrenorRepository.AddAsync(a);
 
-            TempData["Success"] = "Antrenör başarıyla eklendi.";
+            TempData["Success"] = "Antrenör başarıyla eklendi!";
             return RedirectToAction("Index");
         }
-
-
 
         // --------------------- EDIT GET ---------------------
         public async Task<IActionResult> Edit(int id)
         {
-            var ant = await _context.Antrenorler.FindAsync(id);
+            var ant = await _antrenorRepository.GetByIdAsync(id);
             if (ant == null)
                 return NotFound();
 
@@ -93,8 +71,12 @@ namespace FitnessCenter.Areas.Admin.Controllers
             if (!ModelState.IsValid)
                 return View(a);
 
-            _context.Antrenorler.Update(a);
-            await _context.SaveChangesAsync();
+            var mevcut = await _antrenorRepository.GetByIdAsync(a.Id);
+            if (mevcut == null)
+                return NotFound();
+
+            await _antrenorRepository.UpdateAsync(a);
+
             TempData["Success"] = "Antrenör başarıyla güncellendi!";
             return RedirectToAction("Index");
         }
@@ -102,7 +84,7 @@ namespace FitnessCenter.Areas.Admin.Controllers
         // --------------------- DELETE GET ---------------------
         public async Task<IActionResult> Delete(int id)
         {
-            var ant = await _context.Antrenorler.FindAsync(id);
+            var ant = await _antrenorRepository.GetByIdAsync(id);
             if (ant == null)
                 return NotFound();
 
@@ -114,12 +96,12 @@ namespace FitnessCenter.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var ant = await _context.Antrenorler.FindAsync(id);
+            var ant = await _antrenorRepository.GetByIdAsync(id);
             if (ant == null)
                 return NotFound();
 
-            _context.Antrenorler.Remove(ant);
-            await _context.SaveChangesAsync();
+            await _antrenorRepository.RemoveAsync(ant);
+
             TempData["Delete"] = "Antrenör başarıyla silindi!";
             return RedirectToAction("Index");
         }

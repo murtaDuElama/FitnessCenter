@@ -1,24 +1,69 @@
-﻿<h2>AI Analiz Sonucu</h2>
+﻿@model FitnessCenter.Models.AIResponseModel
+@{
+    ViewData["Title"] = "AI Önerisi";
+}
+
+<h2>@(Model?.Headline ?? "AI Önerisi")</h2>
 <hr />
 
-<div class="alert alert-info">
-    <strong>Not:</strong> Bu sayfa şu anda örnek veri gösteriyor.
-    Backend kısmında OpenAI API ile gerçek sonuç üretilecek.
-</div>
+@if (Model == null)
+{
+    <div class="alert alert-warning">
+        Sonuç verisi bulunamadı. Lütfen tekrar deneyin.
+    </div>
 
-<h4>📌 AI'nın Önerdiği Egzersiz Planı</h4>
-<ul>
-    <li>Haftada 3 gün tam vücut antrenmanı</li>
-    <li>Günde 20 dakika kardiyo</li>
-    <li>Esneme ve core çalışmaları</li>
-</ul>
+    <a asp-action="Index" class="btn btn-secondary mt-3">Yeni Öneri Al</a>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">Egzersiz Planı</div>
+                <div class="card-body">
+                    @if (Model.WorkoutPlan != null && Model.WorkoutPlan.Any())
+                    {
+                        <ul class="mb-0">
+                            @foreach (var item in Model.WorkoutPlan)
+                            {
+                                <li>@item</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <div class="text-muted">Egzersiz planı bulunamadı.</div>
+                    }
+                </div>
+            </div>
+        </div>
 
-<h4 class="mt-4">📌 AI'nın Önerdiği Beslenme Planı</h4>
-<ul>
-    <li>Günde 140g protein</li>
-    <li>Sabah yumurta + yulaf</li>
-    <li>Öğle tavuk + sebze</li>
-    <li>Akşam balık veya kırmızı et</li>
-</ul>
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">Beslenme Önerisi</div>
+                <div class="card-body">
+                    @if (Model.NutritionPlan != null && Model.NutritionPlan.Any())
+                    {
+                        <ul class="mb-0">
+                            @foreach (var item in Model.NutritionPlan)
+                            {
+                                <li>@item</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <div class="text-muted">Beslenme önerisi bulunamadı.</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 
-<a href="/Ai" class="btn btn-secondary mt-4">Yeniden Analiz Yap</a>
+    @if (!string.IsNullOrWhiteSpace(Model.ExtraNote))
+    {
+        <div class="alert alert-info mt-3">@Model.ExtraNote</div>
+    }
+
+    <a asp-action="Index" class="btn btn-secondary mt-3">Yeni Öneri Al</a>
+}

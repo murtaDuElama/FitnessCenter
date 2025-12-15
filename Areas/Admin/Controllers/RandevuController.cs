@@ -1,7 +1,6 @@
-﻿using FitnessCenter.Data;
+﻿using FitnessCenter.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace FitnessCenter.Areas.Admin.Controllers
 {
@@ -9,69 +8,74 @@ namespace FitnessCenter.Areas.Admin.Controllers
     [Authorize(Roles = "Admin")]
     public class RandevuController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IRandevuRepository _randevuRepository;
 
-        public RandevuController(AppDbContext context)
+        public RandevuController(IRandevuRepository randevuRepository)
         {
-            _context = context;
+            _randevuRepository = randevuRepository;
         }
 
-        // 1) ÖZET LİSTE (Admin Panel Kartından gelinir)
+        // --------------------- RANDEVU LİSTESİ ---------------------
         public async Task<IActionResult> Index()
         {
-            var randevular = await _context.Randevular
-                .Include(r => r.Hizmet)
-                .Include(r => r.Antrenor)
-                .Include(r => r.User)
-                .OrderByDescending(r => r.Tarih)
-                .ToListAsync();
-
-            return View(randevular); // Views/Randevu/Index.cshtml (özet)
+            var randevular = await _randevuRepository.GetAllWithDetailsAsync();
+            return View(randevular);
         }
 
-        // 2) TAM YÖNETİM LİSTESİ (Navbar "Randevular")
-        public async Task<IActionResult> Manage()
+        // --------------------- ONAYLA ---------------------
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Onayla(int id)
         {
-            var randevular = await _context.Randevular
-                .Include(r => r.Hizmet)
-                .Include(r => r.Antrenor)
-                .Include(r => r.User)
-                .OrderByDescending(r => r.Tarih)
-                .ToListAsync();
+            var randevu = await _randevuRepository.GetByIdAsync(id);
+            if (randevu == null)
+            {
+                TempData["Delete"] = "Randevu bulunamadı.";
+                return RedirectToAction(nameof(Index));
+            }
 
-            return View(randevular); // Views/Randevu/Manage.cshtml (tam yönetim)
+            randevu.Onaylandi = true;
+            await _randevuRepository.UpdateAsync(randevu);
+
+            TempData["Success"] = "Randevu onaylandı!";
+            return RedirectToAction(nameof(Index));
         }
 
-        // 3) DETAY (opsiyonel: istersen burada sadece detay + sil)
-        public async Task<IActionResult> Edit(int id)
+        // --------------------- İPTAL ET ---------------------
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> IptalEt(int id)
         {
-            var randevu = await _context.Randevular
-                .Include(r => r.Hizmet)
-                .Include(r => r.Antrenor)
-                .Include(r => r.User)
-                .FirstOrDefaultAsync(r => r.Id == id);
+            var randevu = await _randevuRepository.GetByIdAsync(id);
+            if (randevu == null)
+            {
+                TempData["Delete"] = "Randevu bulunamadı.";
+                return RedirectToAction(nameof(Index));
+            }
 
-            if (randevu == null) return NotFound();
-            return View(randevu);
+            randevu.Onaylandi = false;
+            await _randevuRepository.UpdateAsync(randevu);
+
+            TempData["Delete"] = "Randevu iptal edildi!";
+            return RedirectToAction(nameof(Index));
         }
 
-        // 4) SİL (tam yönetimden veya detaydan)
+        // --------------------- SİL ---------------------
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Sil(int id)
         {
-            var randevu = await _context.Randevular.FindAsync(id);
+            var randevu = await _randevuRepository.GetByIdAsync(id);
             if (randevu == null)
             {
-                TempData["Error"] = "Randevu bulunamadı.";
-                return RedirectToAction(nameof(Manage));
+                TempData["Delete"] = "Randevu bulunamadı.";
+                return RedirectToAction(nameof(Index));
             }
 
-            _context.Randevular.Remove(randevu);
-            await _context.SaveChangesAsync();
+            await _randevuRepository.RemoveAsync(randevu);
 
             TempData["Delete"] = "Randevu başarıyla silindi!";
-            return RedirectToAction(nameof(Manage));
+            return RedirectToAction(nameof(Index));
         }
     }
 }

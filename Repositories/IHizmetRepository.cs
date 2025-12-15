@@ -1,6 +1,13 @@
-﻿namespace FitnessCenter.Repositories
+﻿using FitnessCenter.Models;
+
+namespace FitnessCenter.Repositories
 {
-    public class IHizmetRepository
+    public interface IHizmetRepository
     {
+        Task<List<Hizmet>> GetAllAsync();
+        Task<Hizmet?> GetByIdAsync(int id);
+        Task AddAsync(Hizmet hizmet);
+        Task UpdateAsync(Hizmet hizmet);
+        Task RemoveAsync(Hizmet hizmet);
     }
 }

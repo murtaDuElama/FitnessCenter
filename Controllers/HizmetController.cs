@@ -1,23 +1,23 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using FitnessCenter.Data;
-using FitnessCenter.Models;
+﻿using FitnessCenter.Models;
+using FitnessCenter.Repositories;
+using Microsoft.AspNetCore.Mvc;
 
-namespace FitnessCenter.Controllers // Namespace'in "FitnessCenter.Controllers" olduğundan emin olun
+namespace FitnessCenter.Controllers
 {
     public class HizmetController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IHizmetRepository _hizmetRepository;
 
-        public HizmetController(AppDbContext context)
+        public HizmetController(IHizmetRepository hizmetRepository)
         {
-            _context = context;
+            _hizmetRepository = hizmetRepository;
         }
 
-        // Sadece Listeleme Yapar
+        // Sadece listeleme yapar
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var hizmetler = await _context.Hizmetler.ToListAsync();
+            var hizmetler = await _hizmetRepository.GetAllAsync();
             return View(hizmetler);
         }
     }

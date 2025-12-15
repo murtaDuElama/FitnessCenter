@@ -1,21 +1,35 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FitnessCenter.Models;
+using FitnessCenter.Services;
+using Microsoft.AspNetCore.Mvc;
 
-public class AiController : Controller
+namespace FitnessCenter.Controllers
 {
-    public IActionResult Index()
+    public class AiController : Controller
     {
-        return View();
-    }
+        private readonly AiService _aiService;
 
-    [HttpPost]
-    public IActionResult Analyze()
-    {
-        // Sonraki aşamada bu yönteme OpenAI kodu ekleyeceğiz.
-        return View("Result");
-    }
+        public AiController(AiService aiService)
+        {
+            _aiService = aiService;
+        }
 
-    public IActionResult Result()
-    {
-        return View();
+        [HttpGet]
+        public IActionResult Index()
+        {
+            return View(new AIRequestModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Analyze(AIRequestModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("Index", model);
+            }
+
+            var response = _aiService.BuildPlan(model);
+            return View("Result", response);
+        }
     }
 }
