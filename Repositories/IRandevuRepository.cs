@@ -13,5 +13,6 @@ namespace FitnessCenter.Repositories
         Task RemoveAsync(Randevu randevu);
         Task UpdateAsync(Randevu randevu);
         Task<bool> AnyAsync(Expression<Func<Randevu, bool>> predicate);
+        Task<int> SaveChangesAsync(); // <-- EKLE
     }
 }

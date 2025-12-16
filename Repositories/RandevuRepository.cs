@@ -68,5 +68,7 @@ namespace FitnessCenter.Repositories
         {
             return _context.Randevular.AnyAsync(predicate);
         }
+        public Task<int> SaveChangesAsync()
+       => _context.SaveChangesAsync();
     }
 }

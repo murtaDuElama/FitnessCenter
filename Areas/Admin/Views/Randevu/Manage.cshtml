@@ -21,6 +21,15 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
     @if (TempData["Error"] != null)
     {
         <div class="alert alert-danger alert-dismissible fade show">
@@ -42,6 +51,7 @@
                             <th>Tarih</th>
                             <th>Saat</th>
                             <th class="text-center">Durum</th>
+                            <th class="text-center">Onay</th>
                             <th class="text-center">Düzenle</th>
                             <th class="text-center">Sil</th>
                         </tr>
@@ -58,6 +68,7 @@
                                     <td><span class="badge bg-primary">@(item.Hizmet?.Ad ?? "-")</span></td>
                                     <td>@item.Tarih.ToString("dd.MM.yyyy")</td>
                                     <td>@item.Saat</td>
+
                                     <td class="text-center">
                                         @if (item.Onaylandi)
                                         {
@@ -68,6 +79,41 @@
                                             <span class="badge bg-warning text-dark">Bekliyor</span>
                                         }
                                     </td>
+
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            @if (!item.Onaylandi)
+                                            {
+                                                <form asp-area="Admin"
+                                                      asp-controller="Randevu"
+                                                      asp-action="Onayla"
+                                                      method="post"
+                                                      class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="id" value="@item.Id" />
+                                                    <button type="submit" class="btn btn-success btn-sm">
+                                                        <i class="fas fa-check me-1"></i>Onayla
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <form asp-area="Admin"
+                                                      asp-controller="Randevu"
+                                                      asp-action="IptalEt"
+                                                      method="post"
+                                                      class="d-inline"
+                                                      onsubmit="return confirm('Onayı kaldırmak istediğinize emin misiniz?');">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="id" value="@item.Id" />
+                                                    <button type="submit" class="btn btn-outline-warning btn-sm">
+                                                        <i class="fas fa-undo me-1"></i>Onayı Kaldır
+                                                    </button>
+                                                </form>
+                                            }
+                                        </div>
+                                    </td>
+
                                     <td class="text-center">
                                         <a asp-area="Admin"
                                            asp-controller="Randevu"
@@ -77,6 +123,7 @@
                                             <i class="fas fa-edit me-1"></i>Düzenle
                                         </a>
                                     </td>
+
                                     <td class="text-center">
                                         <form asp-area="Admin"
                                               asp-controller="Randevu"
@@ -97,7 +144,7 @@
                         else
                         {
                             <tr>
-                                <td colspan="9" class="text-center text-muted py-4">
+                                <td colspan="10" class="text-center text-muted py-4">
                                     Henüz randevu bulunmuyor.
                                 </td>
                             </tr>

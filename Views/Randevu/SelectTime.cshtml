@@ -2,11 +2,42 @@
 
 @{
     ViewData["Title"] = "Saat Seç";
+
     int hizmetId = (int)ViewBag.HizmetId;
     int antrenorId = (int)ViewBag.AntrenorId;
+
+    string seciliTarih = (string)ViewBag.SeciliTarih;
+    string seciliTarihLabel = (string)ViewBag.SeciliTarihLabel;
 }
 
 <h2 class="mb-4">Randevu Saati Seç</h2>
+
+<div class="mb-3">
+    <form asp-action="SelectTime" asp-controller="Randevu" method="get" class="row g-3 align-items-end">
+        <input type="hidden" name="hizmetId" value="@hizmetId" />
+        <input type="hidden" name="antrenorId" value="@antrenorId" />
+
+        <div class="col-sm-6 col-md-4">
+            <label class="form-label fw-bold">Randevu Tarihi</label>
+            <input type="date"
+                   name="tarih"
+                   class="form-control"
+                   min="@DateTime.Today.ToString("yyyy-MM-dd")"
+                   value="@seciliTarih"
+                   required />
+        </div>
+
+        <div class="col-sm-6 col-md-3">
+            <button type="submit" class="btn btn-outline-primary">
+                Tarihi Güncelle
+            </button>
+        </div>
+
+        <div class="col-12 col-md-5 text-md-end text-muted">
+            <small>Seçili gün: @seciliTarihLabel</small>
+        </div>
+    </form>
+</div>
 
 @if (TempData["Error"] != null)
 {
@@ -17,23 +48,35 @@
       asp-controller="Randevu"
       method="post">
 
+    @Html.AntiForgeryToken()
+
     <!-- GİZLİ ALANLAR (ÇOK KRİTİK) -->
     <input type="hidden" name="hizmetId" value="@hizmetId" />
     <input type="hidden" name="antrenorId" value="@antrenorId" />
+    <input type="hidden" name="tarih" value="@seciliTarih" />
 
     <div class="mb-3">
         <label class="form-label fw-bold">Müsait Saatler</label>
 
-        <select name="saat" class="form-select" required>
-            <option value="">Saat Seçiniz</option>
-            @foreach (var saat in Model)
-            {
-                <option value="@saat">@saat</option>
-            }
-        </select>
+        @if (Model != null && Model.Any())
+        {
+            <select name="saat" class="form-select" required>
+                <option value="">Saat Seçiniz</option>
+                @foreach (var saat in Model)
+                {
+                    <option value="@saat">@saat</option>
+                }
+            </select>
+        }
+        else
+        {
+            <div class="alert alert-warning mb-0">
+                Seçili gün için uygun saat bulunamadı. Lütfen farklı bir tarih seçiniz.
+            </div>
+        }
     </div>
 
-    <button type="submit" class="btn btn-success">
+    <button type="submit" class="btn btn-success" @(Model != null && Model.Any() ? "" : "disabled")>
         Randevu Oluştur
     </button>
 
