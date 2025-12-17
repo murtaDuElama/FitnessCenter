@@ -18,6 +18,7 @@ namespace FitnessCenter.Services
 
         Task<List<Randevu>> GetUserRandevularAsync(string userId);
 
+
         Task<bool> IptalEtAsync(int id, string userId);
     }
 }
