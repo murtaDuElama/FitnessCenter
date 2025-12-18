@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FitnessCenter.Models.ViewModels
+﻿namespace FitnessCenter.Models.ViewModels
 {
     public class RandevuViewModel
     {

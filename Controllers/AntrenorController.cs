@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using FitnessCenter.Repositories;
+﻿using FitnessCenter.Repositories;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FitnessCenter.Controllers
 {

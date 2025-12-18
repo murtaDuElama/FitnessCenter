@@ -1,0 +1,265 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Center API Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .endpoint-card {
+            margin-bottom: 20px;
+            border-left: 4px solid #0d6efd;
+        }
+
+        .response-area {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">🏋️ Fitness Center REST API Test</span>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="alert alert-info">
+            <h5>REST API Test Arayüzü</h5>
+            <p>Bu sayfa, Fitness Center REST API endpoint'lerini test etmek için hazırlanmıştır.</p>
+            <p><strong>Swagger Dokümantasyonu:</strong> <a href="/swagger" target="_blank">/swagger</a></p>
+        </div>
+
+        <!-- İstatistikler -->
+        <div class="card endpoint-card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">📊 Kapsamlı İstatistikler</h5>
+            </div>
+            <div class="card-body">
+                <p><code>GET /api/Rapor/istatistikler</code></p>
+                <button class="btn btn-success" onclick="getIstatistikler()">İstatistikleri Getir</button>
+                <div class="response-area mt-3" id="istatistikler-response">
+                    <em>Sonuç burada görünecek...</em>
+                </div>
+            </div>
+        </div>
+
+        <!-- Randevu Raporları -->
+        <div class="card endpoint-card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">📅 Randevu Raporları (Filtreleme)</h5>
+            </div>
+            <div class="card-body">
+                <p><code>GET /api/Rapor/randevular</code></p>
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label>Başlangıç Tarihi:</label>
+                        <input type="date" class="form-control" id="baslangic-tarih">
+                    </div>
+                    <div class="col-md-3">
+                        <label>Bitiş Tarihi:</label>
+                        <input type="date" class="form-control" id="bitis-tarih">
+                    </div>
+                    <div class="col-md-3">
+                        <label>Antrenör ID:</label>
+                        <input type="number" class="form-control" id="antrenor-id" placeholder="Opsiyonel">
+                    </div>
+                    <div class="col-md-3">
+                        <label>Sadece Onaylı:</label>
+                        <select class="form-control" id="sadece-onayli">
+                            <option value="">Tümü</option>
+                            <option value="true">Evet</option>
+                            <option value="false">Hayır</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="getRandevular()">Randevuları Getir</button>
+                <div class="response-area mt-3" id="randevular-response">
+                    <em>Sonuç burada görünecek...</em>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gelir Raporu -->
+        <div class="card endpoint-card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">💰 Gelir Raporu</h5>
+            </div>
+            <div class="card-body">
+                <p><code>GET /api/Rapor/gelir</code></p>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label>Başlangıç Tarihi:</label>
+                        <input type="date" class="form-control" id="gelir-baslangic">
+                    </div>
+                    <div class="col-md-6">
+                        <label>Bitiş Tarihi:</label>
+                        <input type="date" class="form-control" id="gelir-bitis">
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="getGelirRaporu()">Gelir Raporunu Getir</button>
+                <div class="response-area mt-3" id="gelir-response">
+                    <em>Sonuç burada görünecek...</em>
+                </div>
+            </div>
+        </div>
+
+        <!-- Antrenör Detay -->
+        <div class="card endpoint-card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">👤 Antrenör Detay Raporu</h5>
+            </div>
+            <div class="card-body">
+                <p><code>GET /api/Rapor/antrenor/{id}</code></p>
+                <div class="mb-3">
+                    <label>Antrenör ID:</label>
+                    <input type="number" class="form-control" id="antrenor-detay-id" value="1">
+                </div>
+                <button class="btn btn-success" onclick="getAntrenorDetay()">Antrenör Detayını Getir</button>
+                <div class="response-area mt-3" id="antrenor-detay-response">
+                    <em>Sonuç burada görünecek...</em>
+                </div>
+            </div>
+        </div>
+
+        <!-- Uygun Antrenörler -->
+        <div class="card endpoint-card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">🔍 Uygun Antrenörler Sorgulama</h5>
+            </div>
+            <div class="card-body">
+                <p><code>GET /api/Rapor/uygun-antrenorler</code></p>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label>Tarih:</label>
+                        <input type="date" class="form-control" id="uygun-tarih">
+                    </div>
+                    <div class="col-md-6">
+                        <label>Saat (Opsiyonel):</label>
+                        <input type="text" class="form-control" id="uygun-saat" placeholder="örn: 10:00">
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="getUygunAntrenorler()">Uygun Antrenörleri Getir</button>
+                <div class="response-area mt-3" id="uygun-response">
+                    <em>Sonuç burada görünecek...</em>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const baseUrl = '/api/Rapor';
+
+        function displayResponse(elementId, data, error = false) {
+            const element = document.getElementById(elementId);
+            if (error) {
+                element.innerHTML = `<pre style="color: red;">${JSON.stringify(data, null, 2)}</pre>`;
+            } else {
+                element.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            }
+        }
+
+        async function getIstatistikler() {
+            try {
+                const response = await fetch(`${baseUrl}/istatistikler`);
+                const data = await response.json();
+                displayResponse('istatistikler-response', data);
+            } catch (error) {
+                displayResponse('istatistikler-response', { error: error.message }, true);
+            }
+        }
+
+        async function getRandevular() {
+            try {
+                const baslangic = document.getElementById('baslangic-tarih').value;
+                const bitis = document.getElementById('bitis-tarih').value;
+                const antrenorId = document.getElementById('antrenor-id').value;
+                const sadeceOnayli = document.getElementById('sadece-onayli').value;
+
+                let url = `${baseUrl}/randevular?`;
+                if (baslangic) url += `baslangicTarihi=${baslangic}&`;
+                if (bitis) url += `bitisTarihi=${bitis}&`;
+                if (antrenorId) url += `antrenorId=${antrenorId}&`;
+                if (sadeceOnayli) url += `sadeceOnaylananlar=${sadeceOnayli}`;
+
+                const response = await fetch(url);
+                const data = await response.json();
+                displayResponse('randevular-response', data);
+            } catch (error) {
+                displayResponse('randevular-response', { error: error.message }, true);
+            }
+        }
+
+        async function getGelirRaporu() {
+            try {
+                const baslangic = document.getElementById('gelir-baslangic').value;
+                const bitis = document.getElementById('gelir-bitis').value;
+
+                let url = `${baseUrl}/gelir?`;
+                if (baslangic) url += `baslangicTarihi=${baslangic}&`;
+                if (bitis) url += `bitisTarihi=${bitis}`;
+
+                const response = await fetch(url);
+                const data = await response.json();
+                displayResponse('gelir-response', data);
+            } catch (error) {
+                displayResponse('gelir-response', { error: error.message }, true);
+            }
+        }
+
+        async function getAntrenorDetay() {
+            try {
+                const id = document.getElementById('antrenor-detay-id').value;
+                const response = await fetch(`${baseUrl}/antrenor/${id}`);
+                const data = await response.json();
+                displayResponse('antrenor-detay-response', data);
+            } catch (error) {
+                displayResponse('antrenor-detay-response', { error: error.message }, true);
+            }
+        }
+
+        async function getUygunAntrenorler() {
+            try {
+                const tarih = document.getElementById('uygun-tarih').value;
+                const saat = document.getElementById('uygun-saat').value;
+
+                if (!tarih) {
+                    alert('Lütfen tarih seçin!');
+                    return;
+                }
+
+                let url = `${baseUrl}/uygun-antrenorler?tarih=${tarih}`;
+                if (saat) url += `&saat=${saat}`;
+
+                const response = await fetch(url);
+                const data = await response.json();
+                displayResponse('uygun-response', data);
+            } catch (error) {
+                displayResponse('uygun-response', { error: error.message }, true);
+            }
+        }
+
+        // Varsayılan tarih değerlerini ayarla
+        window.onload = function() {
+            const today = new Date().toISOString().split('T')[0];
+            const lastMonth = new Date();
+            lastMonth.setMonth(lastMonth.getMonth() - 1);
+            const lastMonthStr = lastMonth.toISOString().split('T')[0];
+
+            document.getElementById('gelir-baslangic').value = lastMonthStr;
+            document.getElementById('gelir-bitis').value = today;
+            document.getElementById('uygun-tarih').value = today;
+        };
+    </script>
+</body>
+</html>

@@ -1,7 +1,6 @@
-﻿using System.Linq.Expressions;
-using FitnessCenter.Data;
-using FitnessCenter.Models;
+﻿using FitnessCenter.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace FitnessCenter.Repositories
 {

@@ -1,7 +1,4 @@
 ﻿using FitnessCenter.Models;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace FitnessCenter.Services
 {

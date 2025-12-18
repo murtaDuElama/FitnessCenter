@@ -1,6 +1,4 @@
-﻿using FitnessCenter.Models;
-
-namespace FitnessCenter.Repositories
+﻿namespace FitnessCenter.Repositories
 {
     public interface IHizmetRepository
     {

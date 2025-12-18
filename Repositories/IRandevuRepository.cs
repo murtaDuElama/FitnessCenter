@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using FitnessCenter.Models;
 
 namespace FitnessCenter.Repositories
 {

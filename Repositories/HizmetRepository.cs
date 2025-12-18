@@ -1,5 +1,4 @@
 ﻿using FitnessCenter.Data;
-using FitnessCenter.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitnessCenter.Repositories

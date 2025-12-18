@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using FitnessCenter.Models; // Hizmet, Antrenor, ApplicationUser için gerekli
+﻿using FitnessCenter.Models; // Hizmet, Antrenor, ApplicationUser için gerekli
+using System.ComponentModel.DataAnnotations;
 
 public class Randevu
 {

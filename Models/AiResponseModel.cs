@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace FitnessCenter.Models
+﻿namespace FitnessCenter.Models
 {
     public class AIResponseModel
     {

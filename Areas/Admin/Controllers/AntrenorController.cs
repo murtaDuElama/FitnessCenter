@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FitnessCenter.Repositories;
 using Microsoft.AspNetCore.Authorization;
-using FitnessCenter.Models;
-using FitnessCenter.Repositories;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FitnessCenter.Areas.Admin.Controllers
 {

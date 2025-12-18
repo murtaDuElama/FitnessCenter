@@ -1,7 +1,6 @@
 ﻿using FitnessCenter.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection; // Servisleri çağırmak için gerekli
 
 namespace FitnessCenter.Data
 {

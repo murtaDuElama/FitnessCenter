@@ -1,5 +1,4 @@
-﻿using FitnessCenter.Models;
-using FitnessCenter.Repositories;
+﻿using FitnessCenter.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

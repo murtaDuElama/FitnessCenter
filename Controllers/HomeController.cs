@@ -1,6 +1,6 @@
-using System.Diagnostics;
 using FitnessCenter.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace FitnessCenter.Controllers
 {
