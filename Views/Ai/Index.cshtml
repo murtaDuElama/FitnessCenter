@@ -1,93 +1,273 @@
-﻿@model FitnessCenter.Models.AIRequestModel
-@{
-    ViewData["Title"] = "AI Fitness Öneri";
+﻿@{
+    ViewData["Title"] = "AI Fitness Asistanı";
 }
 
-<h2 class="mb-4">AI Destekli Fitness Öneri Sistemi</h2>
-<p class="text-muted">Hedefinizi ve temel vücut ölçümlerinizi girin, sistem yapay zekâ destekli kişiselleştirilmiş bir plan oluştursun.</p>
-<hr />
-
-<form asp-action="Analyze" method="post" class="row g-3">
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-    <div class="col-md-6">
-        <label asp-for="FitnessGoal" class="form-label"></label>
-        <select asp-for="FitnessGoal" class="form-select">
-            <option value="">Seçiniz</option>
-            <option value="Kilo verme">Kilo verme</option>
-            <option value="Kilo alma">Kilo alma</option>
-            <option value="Kas geliştirme">Kas geliştirme</option>
-            <option value="Esneklik artırma">Esneklik artırma</option>
-        </select>
-        <span asp-validation-for="FitnessGoal" class="text-danger"></span>
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4">
+            <i class="fas fa-robot me-3 text-primary"></i>
+            AI Fitness Asistanı
+        </h1>
+        <p class="lead text-muted">Google Gemini ile Desteklenmektedir</p>
     </div>
 
-    <div class="col-md-6">
-        <label asp-for="Intensity" class="form-label"></label>
-        <select asp-for="Intensity" class="form-select">
-            <option value="">Seçiniz</option>
-            <option value="Düşük">Düşük</option>
-            <option value="Orta">Orta</option>
-            <option value="Yüksek">Yüksek</option>
-        </select>
-        <span asp-validation-for="Intensity" class="text-danger"></span>
-    </div>
-
-    <div class="col-md-6">
-        <label asp-for="BodyType" class="form-label"></label>
-        <select asp-for="BodyType" class="form-select">
-            <option value="">Seçiniz</option>
-            <option value="Ektomorf">Ektomorf</option>
-            <option value="Mezomorf">Mezomorf</option>
-            <option value="Endomorf">Endomorf</option>
-        </select>
-        <span asp-validation-for="BodyType" class="text-danger"></span>
-    </div>
-
-    <div class="col-md-3">
-        <label asp-for="HeightCm" class="form-label"></label>
-        <div class="input-group">
-            <input asp-for="HeightCm" type="number" class="form-control" step="0.1" placeholder="Boy" />
-            <span class="input-group-text">cm</span>
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-        <span asp-validation-for="HeightCm" class="text-danger"></span>
-    </div>
-
-    <div class="col-md-3">
-        <label asp-for="WeightKg" class="form-label"></label>
-        <div class="input-group">
-            <input asp-for="WeightKg" type="number" class="form-control" step="0.1" placeholder="Kilo" />
-            <span class="input-group-text">kg</span>
-        </div>
-        <span asp-validation-for="WeightKg" class="text-danger"></span>
-    </div>
-
-    <div class="col-md-3">
-        <label asp-for="Age" class="form-label"></label>
-        <input asp-for="Age" type="number" class="form-control" min="12" max="100" />
-        <span asp-validation-for="Age" class="text-danger"></span>
-    </div>
-
-    <div class="col-md-6">
-        <label asp-for="DailyMinutes" class="form-label"></label>
-        <input asp-for="DailyMinutes" type="number" min="10" max="240" class="form-control" placeholder="Dakika cinsinden" />
-        <span asp-validation-for="DailyMinutes" class="text-danger"></span>
-    </div>
-
-    <div class="col-12">
-        <label asp-for="SpecialNotes" class="form-label"></label>
-        <textarea asp-for="SpecialNotes" class="form-control" rows="4" placeholder="Sağlık durumları veya özel tercihler"></textarea>
-        <span asp-validation-for="SpecialNotes" class="text-danger"></span>
-    </div>
-
-    <div class="col-12">
-        <button type="submit" class="btn btn-primary w-100">Öneri Al</button>
-    </div>
-</form>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-}
+
+    <div class="row">
+        <!-- ANTRENMAN ANALİZİ -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm hover-shadow">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-dumbbell fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title text-center">Antrenman Analizi</h5>
+                    <p class="card-text text-muted small">
+                        Antrenman programınızı analiz edin ve profesyonel öneriler alın.
+                    </p>
+                    <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#workoutModal">
+                        <i class="fas fa-chart-line me-2"></i>Analiz Et
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BESLENME TAVSİYESİ -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm hover-shadow">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-apple-alt fa-3x text-success"></i>
+                    </div>
+                    <h5 class="card-title text-center">Beslenme Tavsiyesi</h5>
+                    <p class="card-text text-muted small">
+                        Beslenme uzmanından bilimsel tavsiyeler alın.
+                    </p>
+                    <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#nutritionModal">
+                        <i class="fas fa-utensils me-2"></i>Tavsiye Al
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- GENEL SORU-CEVAP -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm hover-shadow">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-comments fa-3x text-info"></i>
+                    </div>
+                    <h5 class="card-title text-center">Genel Soru-Cevap</h5>
+                    <p class="card-text text-muted small">
+                        Fitness ve sağlık hakkında herhangi bir soru sorun.
+                    </p>
+                    <button type="button" class="btn btn-info w-100" data-bs-toggle="modal" data-bs-target="#questionModal">
+                        <i class="fas fa-question-circle me-2"></i>Soru Sor
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SONUÇLAR BÖLÜMÜ -->
+    @if (ViewBag.Analysis != null || ViewBag.NutritionAdvice != null || ViewBag.Answer != null)
+    {
+        <div class="card shadow-lg mt-5">
+            <div class="card-header bg-gradient-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-magic me-2"></i>
+                    AI Yanıtı
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.Analysis != null)
+                {
+                    <div class="mb-3">
+                        <h6 class="text-primary">
+                            <i class="fas fa-dumbbell me-2"></i>Antrenman Analizi:
+                        </h6>
+                        <div class="alert alert-light border">
+                            <strong>Sorgunuz:</strong>
+                            <p class="mb-0">@ViewBag.WorkoutDescription</p>
+                        </div>
+                        <div class="ai-response">
+                            @Html.Raw(ViewBag.Analysis.Replace("\n", "<br/>"))
+                        </div>
+                    </div>
+                }
+
+                @if (ViewBag.NutritionAdvice != null)
+                {
+                    <div class="mb-3">
+                        <h6 class="text-success">
+                            <i class="fas fa-apple-alt me-2"></i>Beslenme Tavsiyesi:
+                        </h6>
+                        <div class="alert alert-light border">
+                            <strong>Sorgunuz:</strong>
+                            <p class="mb-0">@ViewBag.NutritionQuery</p>
+                        </div>
+                        <div class="ai-response">
+                            @Html.Raw(ViewBag.NutritionAdvice.Replace("\n", "<br/>"))
+                        </div>
+                    </div>
+                }
+
+                @if (ViewBag.Answer != null)
+                {
+                    <div class="mb-3">
+                        <h6 class="text-info">
+                            <i class="fas fa-comments me-2"></i>Genel Soru-Cevap:
+                        </h6>
+                        <div class="alert alert-light border">
+                            <strong>Sorgunuz:</strong>
+                            <p class="mb-0">@ViewBag.Question</p>
+                        </div>
+                        <div class="ai-response">
+                            @Html.Raw(ViewBag.Answer.Replace("\n", "<br/>"))
+                        </div>
+                    </div>
+                }
+
+                <button type="button" class="btn btn-outline-secondary" onclick="window.location.reload()">
+                    <i class="fas fa-redo me-2"></i>Yeni Soru Sor
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- ANTRENMAN ANALİZİ MODAL -->
+<div class="modal fade" id="workoutModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-dumbbell me-2"></i>Antrenman Analizi
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="AnalyzeWorkout" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Antrenman Programınızı Açıklayın:</label>
+                        <textarea name="workoutDescription" class="form-control" rows="8"
+                                  placeholder="Örnek: Haftada 3 gün spor yapıyorum. Pazartesi: Göğüs ve triceps (bench press 4x10, push-up 3x15), Çarşamba: Sırt ve biceps, Cuma: Bacak günü. Her antrenman 60 dakika sürüyor."
+                                  required></textarea>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        <strong>İpucu:</strong> Ne kadar detaylı yazarsanız, o kadar iyi tavsiyeler alırsınız!
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-2"></i>Analiz Et
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- BESLENME TAVSİYESİ MODAL -->
+<div class="modal fade" id="nutritionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-apple-alt me-2"></i>Beslenme Tavsiyesi
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="GetNutritionAdvice" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Beslenme Hakkında Sorunuz:</label>
+                        <textarea name="nutritionQuery" class="form-control" rows="6"
+                                  placeholder="Örnek: Kas yapmak için günde ne kadar protein tüketmeliyim? Kilo vermek için hangi besinlerden uzak durmalıyım?"
+                                  required></textarea>
+                    </div>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Önemli:</strong> Bu tavsiyeler genel bilgilendirme amaçlıdır. Kişiye özel diyet için diyetisyene danışın.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-paper-plane me-2"></i>Tavsiye Al
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- GENEL SORU-CEVAP MODAL -->
+<div class="modal fade" id="questionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-comments me-2"></i>Genel Soru-Cevap
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="AskQuestion" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Sorunuz:</label>
+                        <textarea name="question" class="form-control" rows="5"
+                                  placeholder="Örnek: Evde yapabileceğim en etkili karın egzersizleri nelerdir? Koşu mu bisiklet mi daha fazla kalori yakar?"
+                                  required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-info">
+                        <i class="fas fa-paper-plane me-2"></i>Gönder
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-shadow {
+        transition: all 0.3s ease;
+    }
+
+        .hover-shadow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important;
+        }
+
+    .ai-response {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 4px solid #0d6efd;
+        line-height: 1.8;
+        white-space: pre-wrap;
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .modal-header {
+        border-bottom: none;
+    }
+
+    .modal-footer {
+        border-top: none;
+    }
+</style>

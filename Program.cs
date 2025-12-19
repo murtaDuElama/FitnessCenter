@@ -5,6 +5,7 @@ using FitnessCenter.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using FitnessCenter.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,9 +38,8 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // DI (Services + Repositories)
-builder.Services.AddScoped<AiService>();
 builder.Services.AddScoped<IRandevuService, RandevuService>();
-
+builder.Services.AddHttpClient<IGeminiService, GeminiService>();
 builder.Services.AddScoped<IHizmetRepository, HizmetRepository>();
 builder.Services.AddScoped<IAntrenorRepository, AntrenorRepository>();
 builder.Services.AddScoped<IRandevuRepository, RandevuRepository>();
