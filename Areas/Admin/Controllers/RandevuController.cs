@@ -22,6 +22,13 @@ namespace FitnessCenter.Areas.Admin.Controllers
             return View(randevular);
         }
 
+        // --------------------- MANAGE (Alias for Index) ---------------------
+        public async Task<IActionResult> Manage()
+        {
+            var randevular = await _randevuRepository.GetAllWithDetailsAsync();
+            return View("Index", randevular);
+        }
+
         // --------------------- ONAYLA ---------------------
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -56,7 +63,7 @@ namespace FitnessCenter.Areas.Admin.Controllers
             randevu.Onaylandi = false;
             await _randevuRepository.UpdateAsync(randevu);
 
-            TempData["Delete"] = "Randevu iptal edildi!";
+            TempData["Warning"] = "Randevu iptal edildi!";
             return RedirectToAction(nameof(Index));
         }
 

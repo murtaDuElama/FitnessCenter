@@ -8,6 +8,9 @@
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <!-- Site CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
@@ -40,10 +43,39 @@
                     <!-- ADMIN ÜST MENÜ -->
                     @if (User.IsInRole("Admin"))
                     {
-                        <li class="nav-item">
-                            <a class="nav-link" href="/Admin/Randevu/Index">
-                                Randevular
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                Admin Panel
                             </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="/Admin/Home/Index">
+                                        <i class="fas fa-home"></i> Ana Sayfa
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="/Admin/Randevu/Index">
+                                        <i class="fas fa-calendar"></i> Randevular
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="/Admin/Hizmet/Index">
+                                        <i class="fas fa-list"></i> Hizmetler
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="/Admin/Antrenor/Index">
+                                        <i class="fas fa-user-tie"></i> Antrenörler
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="/Admin/Raporlar/Index">
+                                        <i class="fas fa-chart-line"></i> API Raporları
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     }
 

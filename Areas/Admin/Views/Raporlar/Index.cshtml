@@ -1,0 +1,489 @@
+﻿@{
+    ViewData["Title"] = "API Raporları";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="fas fa-chart-line"></i> API Raporları ve İstatistikler</h2>
+                <a href="/swagger" target="_blank" class="btn btn-info">
+                    <i class="fas fa-book"></i> API Dokümantasyonu
+                </a>
+            </div>
+            <p class="text-muted">REST API endpoint'lerinden gelen verilerin görsel gösterimi</p>
+        </div>
+    </div>
+
+    <!-- İstatistik Kartları -->
+    <div class="row mb-4" id="stats-cards">
+        <div class="col-md-3">
+            <div class="card border-primary">
+                <div class="card-body text-center">
+                    <i class="fas fa-calendar-check fa-3x text-primary mb-3"></i>
+                    <h3 class="mb-0" id="toplam-randevu">-</h3>
+                    <p class="text-muted mb-0">Toplam Randevu</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                    <h3 class="mb-0" id="onayli-randevu">-</h3>
+                    <p class="text-muted mb-0">Onaylı Randevu</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-warning">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock fa-3x text-warning mb-3"></i>
+                    <h3 class="mb-0" id="bekleyen-randevu">-</h3>
+                    <p class="text-muted mb-0">Bekleyen Randevu</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-info">
+                <div class="card-body text-center">
+                    <i class="fas fa-lira-sign fa-3x text-info mb-3"></i>
+                    <h3 class="mb-0" id="toplam-gelir">-</h3>
+                    <p class="text-muted mb-0">Toplam Gelir</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Günlük/Haftalık/Aylık -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5><i class="fas fa-calendar-day"></i> Bugün</h5>
+                    <h2 id="bugun-randevu" class="text-primary">-</h2>
+                    <p class="text-muted mb-0">Randevu</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5><i class="fas fa-calendar-week"></i> Bu Hafta</h5>
+                    <h2 id="bu-hafta-randevu" class="text-success">-</h2>
+                    <p class="text-muted mb-0">Randevu</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5><i class="fas fa-calendar-alt"></i> Bu Ay</h5>
+                    <h2 id="bu-ay-randevu" class="text-info">-</h2>
+                    <p class="text-muted mb-0">Randevu</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hizmet Bazlı İstatistikler -->
+    <div class="row mb-4">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-list"></i> Hizmet Bazında Randevular</h5>
+                </div>
+                <div class="card-body">
+                    <div id="hizmet-chart" style="height: 300px;">
+                        <div class="text-center text-muted py-5">
+                            <div class="spinner-border" role="status"></div>
+                            <p class="mt-2">Yükleniyor...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Antrenör Bazlı İstatistikler -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-tie"></i> Antrenör Performansı</h5>
+                </div>
+                <div class="card-body">
+                    <div id="antrenor-chart" style="height: 300px;">
+                        <div class="text-center text-muted py-5">
+                            <div class="spinner-border" role="status"></div>
+                            <p class="mt-2">Yükleniyor...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aylık Trend -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-area"></i> Son 6 Ay Trend Analizi</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="trend-chart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Son Randevular -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-list-ul"></i> Son Randevular</h5>
+                    <div>
+                        <label class="text-white me-2">Filtre:</label>
+                        <select class="form-select form-select-sm d-inline-block w-auto" id="randevu-filter">
+                            <option value="">Tümü</option>
+                            <option value="true">Onaylananlar</option>
+                            <option value="false">Bekleyenler</option>
+                        </select>
+                        <button class="btn btn-sm btn-light ms-2" onclick="loadRandevular()">
+                            <i class="fas fa-sync"></i> Yenile
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th>Saat</th>
+                                    <th>Müşteri</th>
+                                    <th>Hizmet</th>
+                                    <th>Antrenör</th>
+                                    <th>Durum</th>
+                                    <th>Fiyat</th>
+                                </tr>
+                            </thead>
+                            <tbody id="randevu-table-body">
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status"></div>
+                                        <p class="mt-2 text-muted">Veriler yükleniyor...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gelir Raporu -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-warning d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-money-bill-wave"></i> Gelir Raporu</h5>
+                    <div>
+                        <input type="date" class="form-control form-control-sm d-inline-block w-auto" id="gelir-baslangic">
+                        <span class="mx-2">-</span>
+                        <input type="date" class="form-control form-control-sm d-inline-block w-auto" id="gelir-bitis">
+                        <button class="btn btn-sm btn-dark ms-2" onclick="loadGelirRaporu()">
+                            <i class="fas fa-search"></i> Sorgula
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="gelir-raporu-content">
+                        <p class="text-muted text-center py-4">Tarih aralığı seçip "Sorgula" butonuna tıklayın</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        let trendChart = null;
+
+        // Sayfa yüklendiğinde verileri çek
+        document.addEventListener('DOMContentLoaded', function() {
+            loadIstatistikler();
+            loadRandevular();
+
+            // Varsayılan tarih değerleri (son 30 gün)
+            const today = new Date().toISOString().split('T')[0];
+            const lastMonth = new Date();
+            lastMonth.setDate(lastMonth.getDate() - 30);
+            document.getElementById('gelir-baslangic').value = lastMonth.toISOString().split('T')[0];
+            document.getElementById('gelir-bitis').value = today;
+        });
+
+        // İstatistikleri yükle
+        async function loadIstatistikler() {
+            try {
+                const response = await fetch('/api/Rapor/istatistikler');
+                const data = await response.json();
+
+                // Kartları güncelle
+                document.getElementById('toplam-randevu').textContent = data.toplamRandevu;
+                document.getElementById('onayli-randevu').textContent = data.onayliRandevu;
+                document.getElementById('bekleyen-randevu').textContent = data.bekleyenRandevu;
+                document.getElementById('toplam-gelir').textContent = data.toplamGelir.toFixed(2) + ' ₺';
+
+                document.getElementById('bugun-randevu').textContent = data.bugunRandevu;
+                document.getElementById('bu-hafta-randevu').textContent = data.buHaftaRandevu;
+                document.getElementById('bu-ay-randevu').textContent = data.buAyRandevu;
+
+                // Hizmet bazlı chart
+                renderHizmetChart(data.hizmetBazindaIstatistikler);
+
+                // Antrenör bazlı chart
+                renderAntrenorChart(data.antrenorBazindaIstatistikler);
+
+                // Trend chart
+                renderTrendChart(data.aylikTrend);
+
+            } catch (error) {
+                console.error('İstatistikler yüklenirken hata:', error);
+                showError('İstatistikler yüklenemedi: ' + error.message);
+            }
+        }
+
+        // Randevuları yükle
+        async function loadRandevular() {
+            const filter = document.getElementById('randevu-filter').value;
+            let url = '/api/Rapor/randevular?';
+            if (filter) url += 'sadeceOnaylananlar=' + filter;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                const tbody = document.getElementById('randevu-table-body');
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">Randevu bulunamadı</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.slice(0, 20).map(r => `
+                    <tr>
+                        <td>${new Date(r.tarih).toLocaleDateString('tr-TR')}</td>
+                        <td><span class="badge bg-secondary">${r.saat}</span></td>
+                        <td>${r.adSoyad}</td>
+                        <td>${r.hizmetAdi}</td>
+                        <td>${r.antrenorAdi}</td>
+                        <td>
+                            ${r.onaylandi
+                                ? '<span class="badge bg-success">Onaylı</span>'
+                                : '<span class="badge bg-warning">Bekliyor</span>'}
+                        </td>
+                        <td><strong>${r.hizmetFiyat.toFixed(2)} ₺</strong></td>
+                    </tr>
+                `).join('');
+
+            } catch (error) {
+                console.error('Randevular yüklenirken hata:', error);
+            }
+        }
+
+        // Gelir raporu yükle
+        async function loadGelirRaporu() {
+            const baslangic = document.getElementById('gelir-baslangic').value;
+            const bitis = document.getElementById('gelir-bitis').value;
+
+            if (!baslangic || !bitis) {
+                alert('Lütfen tarih aralığı seçin!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/Rapor/gelir?baslangicTarihi=${baslangic}&bitisTarihi=${bitis}`);
+                const data = await response.json();
+
+                const content = document.getElementById('gelir-raporu-content');
+                content.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <h3 class="text-success">${data.toplamGelir.toFixed(2)} ₺</h3>
+                                <p class="text-muted mb-0">Toplam Gelir</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <h3 class="text-primary">${data.toplamRandevu}</h3>
+                                <p class="text-muted mb-0">Toplam Randevu</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <h3 class="text-info">${data.ortalamaSeans.toFixed(2)} ₺</h3>
+                                <p class="text-muted mb-0">Ortalama/Seans</p>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <h6>Hizmet Bazında Gelir</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Hizmet</th>
+                                    <th>Miktar</th>
+                                    <th>Birim Fiyat</th>
+                                    <th>Toplam</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.hizmetBazinda.map(h => `
+                                    <tr>
+                                        <td>${h.hizmetAdi}</td>
+                                        <td>${h.miktar}</td>
+                                        <td>${h.fiyat.toFixed(2)} ₺</td>
+                                        <td><strong>${h.toplamGelir.toFixed(2)} ₺</strong></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Gelir raporu yüklenirken hata:', error);
+            }
+        }
+
+        // Hizmet Chart
+        function renderHizmetChart(data) {
+            const container = document.getElementById('hizmet-chart');
+            container.innerHTML = `
+                <div class="list-group list-group-flush">
+                    ${data.map(h => `
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">${h.hizmetAdi}</h6>
+                                    <small class="text-muted">${h.randevuSayisi} randevu</small>
+                                </div>
+                                <div class="text-end">
+                                    <strong class="text-success">${h.toplamGelir.toFixed(2)} ₺</strong>
+                                </div>
+                            </div>
+                            <div class="progress mt-2" style="height: 6px;">
+                                <div class="progress-bar bg-primary" style="width: ${(h.randevuSayisi / data[0].randevuSayisi * 100)}%"></div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Antrenör Chart
+        function renderAntrenorChart(data) {
+            const container = document.getElementById('antrenor-chart');
+            container.innerHTML = `
+                <div class="list-group list-group-flush">
+                    ${data.map(a => `
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">${a.antrenorAdi}</h6>
+                                    <small class="text-muted">${a.uzmanlik}</small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success">${a.onayliRandevuSayisi}/${a.randevuSayisi}</span>
+                                    <small class="text-muted d-block">%${a.dolulukOrani.toFixed(1)} doluluk</small>
+                                </div>
+                            </div>
+                            <div class="progress mt-2" style="height: 6px;">
+                                <div class="progress-bar bg-success" style="width: ${a.dolulukOrani}%"></div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Trend Chart (Chart.js)
+        function renderTrendChart(data) {
+            const ctx = document.getElementById('trend-chart').getContext('2d');
+
+            if (trendChart) {
+                trendChart.destroy();
+            }
+
+            trendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.ayAdi + ' ' + d.yil),
+                    datasets: [
+                        {
+                            label: 'Randevu Sayısı',
+                            data: data.map(d => d.randevuSayisi),
+                            borderColor: 'rgb(75, 192, 192)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            tension: 0.4,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Gelir (₺)',
+                            data: data.map(d => d.gelir),
+                            borderColor: 'rgb(255, 159, 64)',
+                            backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Randevu Sayısı'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Gelir (₺)'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function showError(message) {
+            alert('Hata: ' + message);
+        }
+    </script>
+}

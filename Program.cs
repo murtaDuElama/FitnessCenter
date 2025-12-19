@@ -38,7 +38,7 @@ builder.Services.AddSwaggerGen(c =>
 
 // DI (Services + Repositories)
 builder.Services.AddScoped<AiService>();
-builder.Services.AddScoped<RandevuService>();
+builder.Services.AddScoped<IRandevuService, RandevuService>();
 
 builder.Services.AddScoped<IHizmetRepository, HizmetRepository>();
 builder.Services.AddScoped<IAntrenorRepository, AntrenorRepository>();

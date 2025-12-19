@@ -1,4 +1,5 @@
 ﻿using FitnessCenter.Data;
+using FitnessCenter.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitnessCenter.Repositories
@@ -37,6 +38,15 @@ namespace FitnessCenter.Repositories
 
         public async Task UpdateAsync(Antrenor antrenor)
         {
+            // Detach existing tracked entity if any
+            var existingEntry = _context.ChangeTracker.Entries<Antrenor>()
+                .FirstOrDefault(e => e.Entity.Id == antrenor.Id);
+
+            if (existingEntry != null)
+            {
+                _context.Entry(existingEntry.Entity).State = EntityState.Detached;
+            }
+
             _context.Antrenorler.Update(antrenor);
             await _context.SaveChangesAsync();
         }

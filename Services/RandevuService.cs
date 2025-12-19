@@ -1,9 +1,13 @@
-﻿using FitnessCenter.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using FitnessCenter.Models;
 using FitnessCenter.Repositories;
 
 namespace FitnessCenter.Services
 {
-    public class RandevuService
+    public class RandevuService : IRandevuService
     {
         private readonly IRandevuRepository _randevuRepository;
 
@@ -75,11 +79,12 @@ namespace FitnessCenter.Services
             var randevu = new Randevu
             {
                 UserId = user.Id,
+                AdSoyad = user.AdSoyad ?? user.UserName ?? "Kullanıcı",
                 HizmetId = hizmetId,
                 AntrenorId = antrenorId,
                 Tarih = start,
                 Saat = saat.Trim(),
-                // Onaylandi vb. alanların varsa burada dokunmuyoruz
+                Onaylandi = false
             };
 
             await _randevuRepository.AddAsync(randevu);
@@ -89,6 +94,25 @@ namespace FitnessCenter.Services
             // Eğer repo'da Commit/Save gibi bir metot varsa, burada onu çağırmalısın.
 
             return (true, null, randevu);
+        }
+
+        public async Task<List<Randevu>> GetUserRandevularAsync(string userId)
+        {
+            return await _randevuRepository.GetByUserIdAsync(userId);
+        }
+
+        public async Task<bool> IptalEtAsync(int id, string userId)
+        {
+            var randevu = await _randevuRepository.GetByIdAsync(id);
+
+            if (randevu == null)
+                return false;
+
+            if (randevu.UserId != userId)
+                return false;
+
+            await _randevuRepository.DeleteAsync(randevu);
+            return true;
         }
 
         // ====== SENDE BU DOSYANIN DEVAMINDA BAŞKA METOTLAR VARSA ======

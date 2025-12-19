@@ -24,6 +24,22 @@
         </div>
     }
 
+    @if (TempData["Delete"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-trash me-2"></i>@TempData["Delete"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Warning"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show">
+            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Warning"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
     @if (TempData["Error"] != null)
     {
         <div class="alert alert-danger alert-dismissible fade show">
@@ -82,13 +98,39 @@
                                     </td>
 
                                     <td class="text-center">
-                                        <!-- ÖZET SAYFA: Düzenle butonu TAM YÖNETİME (navbar randevular) götürsün -->
-                                        <a asp-area="Admin"
-                                           asp-controller="Randevu"
-                                           asp-action="Manage"
-                                           class="btn btn-warning btn-sm">
-                                            <i class="fas fa-edit me-1"></i>Düzenle
-                                        </a>
+                                        <div class="btn-group" role="group">
+                                            @if (!item.Onaylandi)
+                                            {
+                                                <!-- Onayla Butonu -->
+                                                <form asp-action="Onayla" method="post" class="d-inline">
+                                                    <input type="hidden" name="id" value="@item.Id" />
+                                                    <button type="submit" class="btn btn-success btn-sm"
+                                                            onclick="return confirm('Bu randevuyu onaylamak istediğinizden emin misiniz?')">
+                                                        <i class="fas fa-check me-1"></i>Onayla
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <!-- İptal Et Butonu -->
+                                                <form asp-action="IptalEt" method="post" class="d-inline">
+                                                    <input type="hidden" name="id" value="@item.Id" />
+                                                    <button type="submit" class="btn btn-warning btn-sm"
+                                                            onclick="return confirm('Bu randevuyu iptal etmek istediğinizden emin misiniz?')">
+                                                        <i class="fas fa-times me-1"></i>İptal Et
+                                                    </button>
+                                                </form>
+                                            }
+
+                                            <!-- Sil Butonu -->
+                                            <form asp-action="Sil" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@item.Id" />
+                                                <button type="submit" class="btn btn-danger btn-sm"
+                                                        onclick="return confirm('Bu randevuyu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!')">
+                                                    <i class="fas fa-trash me-1"></i>Sil
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             }

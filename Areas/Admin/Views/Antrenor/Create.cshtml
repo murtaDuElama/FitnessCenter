@@ -31,9 +31,12 @@
                                     class="form-select">
                                 <option value="">-- Hizmet Seçiniz --</option>
 
-                                @foreach (var h in (List<string>)ViewBag.Hizmetler)
+                                @if (ViewBag.Hizmetler != null)
                                 {
-                                    <option value="@h">@h</option>
+                                    @foreach (var h in (List<string>)ViewBag.Hizmetler)
+                                    {
+                                        <option value="@h">@h</option>
+                                    }
                                 }
                             </select>
 

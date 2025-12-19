@@ -1,6 +1,7 @@
-﻿using FitnessCenter.Data;
+﻿using System.Linq.Expressions;
+using FitnessCenter.Data;
+using FitnessCenter.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace FitnessCenter.Repositories
 {
@@ -21,6 +22,12 @@ namespace FitnessCenter.Repositories
                 .Where(r => r.UserId == userId)
                 .OrderByDescending(r => r.Tarih)
                 .ToListAsync();
+        }
+
+        // Alias method for GetByUserAsync
+        public Task<List<Randevu>> GetByUserIdAsync(string userId)
+        {
+            return GetByUserAsync(userId);
         }
 
         public Task<List<Randevu>> GetByAntrenorAndDateAsync(int antrenorId, DateTime date)
@@ -55,6 +62,12 @@ namespace FitnessCenter.Repositories
         {
             _context.Randevular.Remove(randevu);
             await _context.SaveChangesAsync();
+        }
+
+        // Alias method for RemoveAsync
+        public async Task DeleteAsync(Randevu randevu)
+        {
+            await RemoveAsync(randevu);
         }
 
         public async Task UpdateAsync(Randevu randevu)

@@ -1,6 +1,7 @@
-﻿using FitnessCenter.Repositories;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using FitnessCenter.Models;
+using FitnessCenter.Repositories;
 
 namespace FitnessCenter.Areas.Admin.Controllers
 {
@@ -9,10 +10,14 @@ namespace FitnessCenter.Areas.Admin.Controllers
     public class AntrenorController : Controller
     {
         private readonly IAntrenorRepository _antrenorRepository;
+        private readonly IHizmetRepository _hizmetRepository;
 
-        public AntrenorController(IAntrenorRepository antrenorRepository)
+        public AntrenorController(
+            IAntrenorRepository antrenorRepository,
+            IHizmetRepository hizmetRepository)
         {
             _antrenorRepository = antrenorRepository;
+            _hizmetRepository = hizmetRepository;
         }
 
         // --------------------- LISTE ---------------------
@@ -33,8 +38,12 @@ namespace FitnessCenter.Areas.Admin.Controllers
         }
 
         // --------------------- CREATE GET ---------------------
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            // Hizmet adlarını dropdown için al
+            var hizmetler = await _hizmetRepository.GetAllAsync();
+            ViewBag.Hizmetler = hizmetler.Select(h => h.Ad).ToList();
+
             return View();
         }
 
@@ -44,7 +53,12 @@ namespace FitnessCenter.Areas.Admin.Controllers
         public async Task<IActionResult> Create(Antrenor a)
         {
             if (!ModelState.IsValid)
+            {
+                // ViewBag'i doldur ve View'a geri dön
+                var hizmetler = await _hizmetRepository.GetAllAsync();
+                ViewBag.Hizmetler = hizmetler.Select(h => h.Ad).ToList();
                 return View(a);
+            }
 
             await _antrenorRepository.AddAsync(a);
 
@@ -59,6 +73,10 @@ namespace FitnessCenter.Areas.Admin.Controllers
             if (ant == null)
                 return NotFound();
 
+            // Hizmet adlarını dropdown için al
+            var hizmetler = await _hizmetRepository.GetAllAsync();
+            ViewBag.Hizmetler = hizmetler.Select(h => h.Ad).ToList();
+
             return View(ant);
         }
 
@@ -68,13 +86,23 @@ namespace FitnessCenter.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(Antrenor a)
         {
             if (!ModelState.IsValid)
+            {
+                // ViewBag'i doldur ve View'a geri dön
+                var hizmetler = await _hizmetRepository.GetAllAsync();
+                ViewBag.Hizmetler = hizmetler.Select(h => h.Ad).ToList();
                 return View(a);
+            }
 
             var mevcut = await _antrenorRepository.GetByIdAsync(a.Id);
             if (mevcut == null)
                 return NotFound();
 
-            await _antrenorRepository.UpdateAsync(a);
+            // Mevcut tracked entity'yi güncelle
+            mevcut.AdSoyad = a.AdSoyad;
+            mevcut.Uzmanlik = a.Uzmanlik;
+            mevcut.FotografUrl = a.FotografUrl;
+
+            await _antrenorRepository.UpdateAsync(mevcut);
 
             TempData["Success"] = "Antrenör başarıyla güncellendi!";
             return RedirectToAction("Index");

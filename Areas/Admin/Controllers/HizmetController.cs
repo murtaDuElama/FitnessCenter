@@ -1,4 +1,5 @@
-﻿using FitnessCenter.Repositories;
+﻿using FitnessCenter.Models;
+using FitnessCenter.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -74,7 +75,12 @@ namespace FitnessCenter.Areas.Admin.Controllers
             if (mevcut == null)
                 return NotFound();
 
-            await _hizmetRepository.UpdateAsync(h);
+            // Mevcut tracked entity'yi güncelle
+            mevcut.Ad = h.Ad;
+            mevcut.Ucret = h.Ucret;
+            mevcut.Sure = h.Sure;
+
+            await _hizmetRepository.UpdateAsync(mevcut);
 
             TempData["Success"] = "Hizmet başarıyla güncellendi!";
             return RedirectToAction("Index");
