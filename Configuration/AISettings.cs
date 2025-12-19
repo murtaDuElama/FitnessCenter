@@ -2,8 +2,8 @@
 {
     public class AISettings
     {
-        public string GeminiApiKey { get; set; } = string.Empty;
-        public string GeminiModel { get; set; } = "gemini-1.5-flash";
-        public string GeminiEndpoint { get; set; } = "https://generativelanguage.googleapis.com/v1beta";
+        public string GroqApiKey { get; set; } = "";
+        public string GroqModel { get; set; } = "llama-3.1-8b-instant";
+        public string GroqBaseUrl { get; set; } = "https://api.groq.com/openai/v1";
     }
 }

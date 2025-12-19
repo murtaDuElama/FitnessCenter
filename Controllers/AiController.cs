@@ -1,77 +1,93 @@
 ﻿using FitnessCenter.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace FitnessCenter.Controllers
 {
     [Authorize]
     public class AIController : Controller
     {
-        private readonly IGeminiService _geminiService;
+        private readonly IAIService _ai;
 
-        public AIController(IGeminiService geminiService)
+        public AIController(IAIService ai)
         {
-            _geminiService = geminiService;
+            _ai = ai ?? throw new ArgumentNullException(nameof(ai));
         }
 
-        // ==================== AI ASISTANI ANA SAYFA ====================
-        public IActionResult Index()
-        {
-            return View();
-        }
+        [HttpGet]
+        public IActionResult Index() => View();
 
-        // ==================== ANTRENMAN ANALİZİ ====================
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AnalyzeWorkout(string workoutDescription)
         {
             if (string.IsNullOrWhiteSpace(workoutDescription))
             {
                 TempData["Error"] = "Lütfen antrenman açıklaması girin.";
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
 
-            var result = await _geminiService.AnalyzeWorkoutAsync(workoutDescription);
-
-            ViewBag.WorkoutDescription = workoutDescription;
-            ViewBag.Analysis = result;
-
-            return View("Index");
+            try
+            {
+                var result = await _ai.AnalyzeWorkoutAsync(workoutDescription);
+                ViewBag.WorkoutDescription = workoutDescription;
+                ViewBag.Analysis = result;
+                return View("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"AI isteği başarısız: {ex.Message}";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        // ==================== BESLENME TAVSİYESİ ====================
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> GetNutritionAdvice(string nutritionQuery)
         {
             if (string.IsNullOrWhiteSpace(nutritionQuery))
             {
                 TempData["Error"] = "Lütfen beslenme sorunuzu girin.";
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
 
-            var result = await _geminiService.GetNutritionAdviceAsync(nutritionQuery);
-
-            ViewBag.NutritionQuery = nutritionQuery;
-            ViewBag.NutritionAdvice = result;
-
-            return View("Index");
+            try
+            {
+                var result = await _ai.GetNutritionAdviceAsync(nutritionQuery);
+                ViewBag.NutritionQuery = nutritionQuery;
+                ViewBag.NutritionAdvice = result;
+                return View("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"AI isteği başarısız: {ex.Message}";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        // ==================== GENEL SORU-CEVAP ====================
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AskQuestion(string question)
         {
             if (string.IsNullOrWhiteSpace(question))
             {
                 TempData["Error"] = "Lütfen bir soru girin.";
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
 
-            var result = await _geminiService.GenerateTextAsync(question);
-
-            ViewBag.Question = question;
-            ViewBag.Answer = result;
-
-            return View("Index");
+            try
+            {
+                var result = await _ai.GenerateTextAsync(question);
+                ViewBag.Question = question;
+                ViewBag.Answer = result;
+                return View("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"AI isteği başarısız: {ex.Message}";
+                return RedirectToAction(nameof(Index));
+            }
         }
     }
 }

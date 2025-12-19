@@ -2,10 +2,11 @@
 using FitnessCenter.Models;
 using FitnessCenter.Repositories;
 using FitnessCenter.Services;
+using FitnessCenter.Configuration;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using FitnessCenter.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,9 +38,18 @@ builder.Services.AddSwaggerGen(c =>
     }
 });
 
+// ------------------------------------------------------
 // DI (Services + Repositories)
+// ------------------------------------------------------
+
+// Randevu servisleri
 builder.Services.AddScoped<IRandevuService, RandevuService>();
-builder.Services.AddHttpClient<IGeminiService, GeminiService>();
+
+// AI ayarlarını bind et (KRİTİK)
+builder.Services.Configure<AISettings>(builder.Configuration.GetSection("AI"));
+builder.Services.AddHttpClient<IAIService, GroqService>();
+
+// Repositories
 builder.Services.AddScoped<IHizmetRepository, HizmetRepository>();
 builder.Services.AddScoped<IAntrenorRepository, AntrenorRepository>();
 builder.Services.AddScoped<IRandevuRepository, RandevuRepository>();
@@ -50,16 +60,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );
 
 // 2) Identity Ayarları
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-{
-    options.Password.RequireDigit = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequiredLength = 3;
-})
-.AddEntityFrameworkStores<AppDbContext>()
-.AddDefaultTokenProviders();
+builder.Services
+    .AddIdentity<ApplicationUser, IdentityRole>(options =>
+    {
+        options.Password.RequireDigit = false;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequiredLength = 3;
+    })
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
 
 var app = builder.Build();
 
@@ -95,7 +106,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// API Controller endpoint'leri (RaporController gibi)
+// API Controller endpoint'leri
 app.MapControllers();
 
 app.MapControllerRoute(
