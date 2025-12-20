@@ -10,5 +10,14 @@ public class Antrenor
     [Required]
     public string Uzmanlik { get; set; }
 
-    public string? FotografUrl { get; set; }  // Opsiyonel
+    public string? FotografUrl { get; set; }
+
+    // Antrenörün müsaitlik saat aralığı
+    [Required]
+    [StringLength(5)]
+    public string CalismaBaslangicSaati { get; set; } = "09:00";
+
+    [Required]
+    [StringLength(5)]
+    public string CalismaBitisSaati { get; set; } = "15:00";
 }

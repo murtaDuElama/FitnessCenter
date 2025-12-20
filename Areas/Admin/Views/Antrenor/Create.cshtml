@@ -57,6 +57,24 @@
                             <small class="form-text text-muted">Opsiyonel - Boş bırakabilirsiniz</small>
                         </div>
 
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CalismaBaslangicSaati" class="form-label">
+                                    <i class="fas fa-clock me-2"></i>Çalışma Başlangıç Saati
+                                </label>
+                                <input asp-for="CalismaBaslangicSaati" type="time" class="form-control" required />
+                                <span asp-validation-for="CalismaBaslangicSaati" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CalismaBitisSaati" class="form-label">
+                                    <i class="fas fa-clock me-2"></i>Çalışma Bitiş Saati
+                                </label>
+                                <input asp-for="CalismaBitisSaati" type="time" class="form-control" required />
+                                <span asp-validation-for="CalismaBitisSaati" class="text-danger"></span>
+                            </div>
+                        </div>
+
+
                         <div class="d-flex justify-content-between mt-4">
                             <a asp-action="Index" class="btn btn-secondary">
                                 <i class="fas fa-arrow-left me-2"></i>Geri Dön

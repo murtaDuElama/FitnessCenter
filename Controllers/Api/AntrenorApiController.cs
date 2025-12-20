@@ -15,60 +15,86 @@ namespace FitnessCenter.Controllers.Api
             _context = context;
         }
 
-        // GET: /api/antrenorler?uzmanlik=...
+        public sealed record AntrenorDto(int Id, string AdSoyad, string Uzmanlik, string? FotografUrl);
+
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] string? uzmanlik)
+        public async Task<ActionResult<IEnumerable<AntrenorDto>>> GetAll([FromQuery] string? uzmanlik, [FromQuery] int? hizmetId)
         {
-            var query = _context.Antrenorler.AsQueryable();
+            var q = _context.Antrenorler.AsQueryable();
+
+            if (hizmetId.HasValue)
+            {
+                var hizmet = await _context.Hizmetler.FindAsync(hizmetId.Value);
+                if (hizmet == null)
+                    return NotFound(new { message = "Hizmet bulunamadı." });
+
+                uzmanlik = hizmet.Ad;
+            }
 
             if (!string.IsNullOrWhiteSpace(uzmanlik))
             {
-                query = query.Where(a => a.Uzmanlik.Contains(uzmanlik));
+                q = q.Where(a => a.Uzmanlik == uzmanlik);
             }
 
-            var antrenorler = await query
+            var list = await q
                 .OrderBy(a => a.AdSoyad)
-                .Select(a => new
-                {
-                    a.Id,
-                    a.AdSoyad,
-                    a.Uzmanlik,
-                    a.FotografUrl
-                })
+                .Select(a => new AntrenorDto(a.Id, a.AdSoyad, a.Uzmanlik, a.FotografUrl))
                 .ToListAsync();
 
-            return Ok(antrenorler);
+            return Ok(list);
         }
 
-        // GET: /api/antrenorler/uygun?tarih=2025-12-15&saat=10:00
         [HttpGet("uygun")]
-        public async Task<IActionResult> GetAvailable([FromQuery] DateTime tarih, [FromQuery] string? saat)
+        public async Task<ActionResult<IEnumerable<AntrenorDto>>> GetAvailable(
+            [FromQuery] DateTime tarih,
+            [FromQuery] string? saat,
+            [FromQuery] int? hizmetId,
+            [FromQuery] string? uzmanlik)
         {
-            var bookedQuery = _context.Randevular
-                .Where(r => r.Tarih.Date == tarih.Date);
+            var targetDate = (tarih == default ? DateTime.Today : tarih.Date);
+
+            if (hizmetId.HasValue)
+            {
+                var hizmet = await _context.Hizmetler.FindAsync(hizmetId.Value);
+                if (hizmet == null)
+                    return NotFound(new { message = "Hizmet bulunamadı." });
+
+                uzmanlik = hizmet.Ad;
+            }
+
+            var q = _context.Antrenorler.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(uzmanlik))
+            {
+                q = q.Where(a => a.Uzmanlik == uzmanlik);
+            }
+
+            var doluIdsQuery = _context.Randevular
+                .Where(r => r.Tarih.Date == targetDate);
 
             if (!string.IsNullOrWhiteSpace(saat))
             {
-                bookedQuery = bookedQuery.Where(r => r.Saat == saat);
+                if (saat == "12:00")
+                    return Ok(new List<AntrenorDto>());
+
+                q = q.Where(a => string.Compare(a.CalismaBaslangicSaati, saat) <= 0
+                             && string.Compare(a.CalismaBitisSaati, saat) >= 0);
+
+                doluIdsQuery = doluIdsQuery.Where(r => r.Saat == saat);
             }
 
-            var bookedIds = await bookedQuery
+            var doluAntrenorIds = await doluIdsQuery
                 .Select(r => r.AntrenorId)
                 .Distinct()
                 .ToListAsync();
 
-            var available = await _context.Antrenorler
-                .Where(a => !bookedIds.Contains(a.Id))
+            var list = await q
+                .Where(a => !doluAntrenorIds.Contains(a.Id))
                 .OrderBy(a => a.AdSoyad)
-                .Select(a => new
-                {
-                    a.Id,
-                    a.AdSoyad,
-                    a.Uzmanlik
-                })
+                .Select(a => new AntrenorDto(a.Id, a.AdSoyad, a.Uzmanlik, a.FotografUrl))
                 .ToListAsync();
 
-            return Ok(available);
+            return Ok(list);
         }
     }
 }

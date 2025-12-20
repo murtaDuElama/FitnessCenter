@@ -152,5 +152,32 @@ namespace FitnessCenter.Controllers
 
             return RedirectToAction(nameof(MyRandevus));
         }
+        private static List<string> BuildHourlySlots(Antrenor antrenor)
+        {
+            int startHour = 9;
+            int endHour = 15;
+
+            if (TimeSpan.TryParse(antrenor.CalismaBaslangicSaati, out var s))
+                startHour = s.Hours;
+
+            if (TimeSpan.TryParse(antrenor.CalismaBitisSaati, out var e))
+                endHour = e.Hours;
+
+            if (endHour < startHour)
+                (startHour, endHour) = (endHour, startHour);
+
+            var result = new List<string>();
+            for (int h = startHour; h <= endHour; h++)
+            {
+                if (h == 12) continue; // öğle arası
+                result.Add(h.ToString("D2") + ":00");
+            }
+
+            if (result.Count == 0)
+                result = new List<string> { "09:00", "10:00", "11:00", "13:00", "14:00", "15:00" };
+
+            return result;
+        }
+
     }
 }

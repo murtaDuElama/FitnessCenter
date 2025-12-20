@@ -39,6 +39,23 @@
                             <input asp-for="FotografUrl" class="form-control" />
                             <span asp-validation-for="FotografUrl" class="text-danger"></span>
                         </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CalismaBaslangicSaati" class="form-label">
+                                    <i class="fas fa-clock me-2"></i>Başlangıç Saati
+                                </label>
+                                <input asp-for="CalismaBaslangicSaati" type="time" class="form-control" required />
+                                <span asp-validation-for="CalismaBaslangicSaati" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CalismaBitisSaati" class="form-label">
+                                    <i class="fas fa-clock me-2"></i>Bitiş Saati
+                                </label>
+                                <input asp-for="CalismaBitisSaati" type="time" class="form-control" required />
+                                <span asp-validation-for="CalismaBitisSaati" class="text-danger"></span>
+                            </div>
+                        </div>
+
 
                         @if (!string.IsNullOrEmpty(Model.FotografUrl))
                         {
