@@ -49,6 +49,9 @@ builder.Services.AddScoped<IRandevuService, RandevuService>();
 builder.Services.Configure<AISettings>(builder.Configuration.GetSection("AI"));
 builder.Services.AddHttpClient<IAIService, GroqService>();
 
+// Görsel üretme servisi (Pollinations.ai - ücretsiz, API key gerektirmez)
+builder.Services.AddScoped<IImageGenerationService, PollinationsService>();
+
 // Repositories
 builder.Services.AddScoped<IHizmetRepository, HizmetRepository>();
 builder.Services.AddScoped<IAntrenorRepository, AntrenorRepository>();

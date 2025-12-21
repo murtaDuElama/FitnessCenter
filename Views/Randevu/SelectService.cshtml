@@ -1,12 +1,88 @@
 ﻿@model IEnumerable<Hizmet>
 
-<h2>Hangi hizmeti almak istiyorsunuz?</h2>
+@{
+    ViewData["Title"] = "Hizmet Seçimi";
 
-<ul class="list-group">
-    @foreach (var h in Model)
-    {
-        <li class="list-group-item">
-            <a href="/Randevu/SelectTrainer?hizmetId=@h.Id">@h.Ad</a>
-        </li>
-    }
-</ul>
+
+
+
+
+
+
+    var hizmetler = new Dictionary<string, (string icon, string color, string image)>
+{
+{ "Fitness", ("fa-dumbbell", "primary",
+"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=300&h=200&fit=crop") },
+{ "Yoga", ("fa-spa", "success", "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=300&h=200&fit=crop") },
+{ "Pilates", ("fa-person-walking", "warning",
+"https://images.unsplash.com/photo-1518611012118-696072aa579a?w=300&h=200&fit=crop") }
+};
+}
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+    <h1><i class="fas fa-hand-pointer me-3"></i>Hizmet Seçimi</h1>
+    <p>Hangi hizmetten randevu almak istiyorsunuz?</p>
+</div>
+
+<div class="container">
+    <div class="row g-4 justify-content-center">
+        @foreach (var h in Model)
+
+
+
+        {
+
+
+
+            var info = hizmetler.ContainsKey(h.Ad)
+
+
+
+            ? hizmetler[h.Ad]
+
+
+
+            : ("fa-star", "info", "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=300&h=200&fit=crop");
+
+
+
+            // Tuple elemanlarını ayrı değişkenlere ata
+
+            var icon = info.Item1;
+
+            var color = info.Item2;
+
+            var image = info.Item3;
+
+                <div class="col-md-4">
+                    <a href="/Randevu/SelectTrainer?hizmetId=@h.Id" class="text-decoration-none">
+                        <div class="card-custom h-100" style="cursor: pointer;">
+                            <img src="@image" alt="@h.Ad" class="card-img-top" style="height: 180px; object-fit: cover;">
+                            <div class="card-body text-center p-4">
+                                <div class="mb-3">
+                                    <span class="badge bg-@color fs-6 px-3 py-2">
+                                        <i class="fas @icon me-2"></i>@h.Ad
+                                    </span>
+                                </div>
+                                <p class="text-muted mb-3">
+                                    <i class="fas fa-clock me-1"></i>@h.Sure dk
+                                    <span class="mx-2">|</span>
+                                    <i class="fas fa-tag me-1"></i>@h.Ucret ₺
+                                </p>
+                                <div class="btn btn-primary-custom w-100">
+                                    <i class="fas fa-arrow-right me-2"></i>Seç ve Devam Et
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+        }
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="/" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Ana Sayfaya Dön
+        </a>
+    </div>
+</div>

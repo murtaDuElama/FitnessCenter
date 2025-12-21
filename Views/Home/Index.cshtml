@@ -1,58 +1,153 @@
-﻿<div class="text-center">
-    <h1 class="display-4">Fitness Center Yönetim Sistemi</h1>
-    <p class="lead">Randevu al, antrenör seç, kişisel programını oluştur!</p>
-    @if (User.Identity != null && User.Identity.IsAuthenticated)
-    {
-        <a asp-controller="Randevu"
-           asp-action="SelectService"
-           class="btn btn-primary btn-lg">
-            Randevu Al
-        </a>
-    }
-    else
-    {
-        <a asp-controller="Account"
-           asp-action="Login"
-           class="btn btn-primary btn-lg">
-            Randevu Al
-        </a>
-    }
+﻿@{
+    ViewData["Title"] = "Ana Sayfa";
+}
 
+<!-- HERO SECTION -->
+<div class="hero-section">
+    <div class="container">
+        <h1 class="animate-fadeInUp">
+            <i class="fas fa-dumbbell me-3"></i>Fitness Center
+        </h1>
+        <p class="animate-fadeInUp" style="animation-delay: 0.2s;">
+            Profesyonel eğitmenler ile kişiselleştirilmiş antrenman deneyimi.
+            Randevunuzu hemen oluşturun!
+        </p>
+        @if (User.Identity != null && User.Identity.IsAuthenticated)
 
+        {
+            <a asp-controller="Randevu" asp-action="SelectService" class="btn btn-primary-custom btn-lg animate-fadeInUp"
+                style="animation-delay: 0.4s;">
+                <i class="fas fa-calendar-plus me-2"></i>Randevu Al
+            </a>
+        }
+
+        else
+
+        {
+            <a asp-controller="Account" asp-action="Login" class="btn btn-primary-custom btn-lg animate-fadeInUp"
+                style="animation-delay: 0.4s;">
+                <i class="fas fa-sign-in-alt me-2"></i>Giriş Yap ve Randevu Al
+            </a>
+        }
+    </div>
 </div>
 
-<hr>
-
-<div class="row mt-4">
-    <div class="col-md-4">
-        <div class="card shadow">
-            <img src="https://source.unsplash.com/400x300/?fitness" class="card-img-top">
-            <div class="card-body">
-                <h5>Fitness Programları</h5>
-                <p>Profesyonel eğitmenler ile birebir çalışma fırsatı.</p>
-            </div>
-        </div>
+<!-- FEATURES SECTION -->
+<div class="container">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-primary-custom">
+            <i class="fas fa-star me-2"></i>Neden Bizi Tercih Etmelisiniz?
+        </h2>
+        <p class="text-muted">Profesyonel hizmet, uzman kadro, modern tesisler</p>
     </div>
 
-    <div class="col-md-4">
-        <div class="card shadow">
-            <img src="https://source.unsplash.com/400x300/?yoga" class="card-img-top">
-            <div class="card-body">
-                <h5>Yoga & Pilates</h5>
-                <p>Ruhunuzu ve bedeninizi yenileyin.</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card shadow">
-            <img src="https://source.unsplash.com/400x300/?gym" class="card-img-top">
-            <div class="card-body">
-                <h5>Antrenörler</h5>
-                <p>Uzman kadromuzu inceleyin.</p>
+    <div class="row g-4">
+        <!-- Fitness -->
+        <div class="col-md-4">
+            <div class="feature-card h-100">
+                <div class="icon-wrapper">
+                    <i class="fas fa-dumbbell"></i>
+                </div>
+                <h4 class="fw-bold mb-3">Fitness Programları</h4>
+                <p class="text-muted mb-4">
+                    Kişiselleştirilmiş fitness programları ile hedeflerinize ulaşın.
+                    Profesyonel eğitmenler eşliğinde güvenli antrenman.
+                </p>
+                <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=200&fit=crop"
+                    alt="Fitness" class="img-fluid rounded-3 shadow-soft">
             </div>
         </div>
 
-    </div>
+        <!-- Yoga -->
+        <div class="col-md-4">
+            <div class="feature-card green-accent h-100">
+                <div class="icon-wrapper">
+                    <i class="fas fa-spa"></i>
+                </div>
+                <h4 class="fw-bold mb-3">Yoga & Pilates</h4>
+                <p class="text-muted mb-4">
+                    Ruhunuzu ve bedeninizi yenileyin. Stres atmak ve esneklik kazanmak
+                    için uzman eğitmenlerle çalışın.
+                </p>
+                <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=200&fit=crop" alt="Yoga"
+                    class="img-fluid rounded-3 shadow-soft">
+            </div>
+        </div>
 
+        <!-- Antrenörler -->
+        <div class="col-md-4">
+            <div class="feature-card brown-accent h-100">
+                <div class="icon-wrapper">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <h4 class="fw-bold mb-3">Uzman Antrenörler</h4>
+                <p class="text-muted mb-4">
+                    Alanında uzman, sertifikalı antrenör kadromuz ile
+                    güvenli ve etkili antrenmanlar yapın.
+                </p>
+                <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=200&fit=crop"
+                    alt="Antrenörler" class="img-fluid rounded-3 shadow-soft">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- STATS SECTION -->
+<div class="container mt-5">
+    <div class="row g-4 text-center">
+        <div class="col-md-3 col-6">
+            <div class="p-4 bg-white rounded-xl shadow-soft">
+                <i class="fas fa-users fa-2x text-primary mb-3"></i>
+                <h3 class="fw-bold text-primary-custom">500+</h3>
+                <p class="text-muted mb-0">Mutlu Üye</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="p-4 bg-white rounded-xl shadow-soft">
+                <i class="fas fa-user-tie fa-2x text-success mb-3"></i>
+                <h3 class="fw-bold text-success-custom">15+</h3>
+                <p class="text-muted mb-0">Uzman Eğitmen</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="p-4 bg-white rounded-xl shadow-soft">
+                <i class="fas fa-calendar-check fa-2x text-warm mb-3"></i>
+                <h3 class="fw-bold text-warm">1000+</h3>
+                <p class="text-muted mb-0">Tamamlanan Seans</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="p-4 bg-white rounded-xl shadow-soft">
+                <i class="fas fa-award fa-2x text-info mb-3"></i>
+                <h3 class="fw-bold" style="color: var(--primary);">5+</h3>
+                <p class="text-muted mb-0">Yıllık Deneyim</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA SECTION -->
+<div class="container mt-5 mb-4">
+    <div class="p-5 rounded-xl text-center text-white"
+        style="background: linear-gradient(135deg, #276749 0%, #48bb78 100%);">
+        <h3 class="fw-bold mb-3">
+            <i class="fas fa-bolt me-2"></i>Hemen Başlayın!
+        </h3>
+        <p class="mb-4 opacity-90">İlk randevunuzu oluşturun ve sağlıklı yaşama adım atın.</p>
+        @if (User.Identity != null && User.Identity.IsAuthenticated)
+
+        {
+            <a asp-controller="Randevu" asp-action="SelectService" class="btn btn-light btn-lg fw-bold">
+                <i class="fas fa-arrow-right me-2"></i>Randevu Oluştur
+            </a>
+        }
+
+        else
+
+        {
+            <a asp-controller="Account" asp-action="Register" class="btn btn-light btn-lg fw-bold">
+                <i class="fas fa-user-plus me-2"></i>Ücretsiz Kayıt Ol
+            </a>
+        }
+    </div>
 </div>

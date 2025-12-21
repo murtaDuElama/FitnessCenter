@@ -2,22 +2,78 @@
 @model IEnumerable<Antrenor>
 
 @{
+    ViewData["Title"] = "Antrenör Seçimi";
+
     var hizmet = ViewBag.Hizmet as Hizmet;
 }
 
-<h2 class="mb-3">@hizmet?.Ad hizmetini veren eğitmenler</h2>
+<!-- PAGE HEADER -->
+<div class="page-header">
+    <h1><i class="fas fa-user-tie me-3"></i>Antrenör Seçimi</h1>
+    <p>
+        <span class="badge bg-light text-dark fs-6">
+            <i class="fas fa-tag me-1"></i>@hizmet?.Ad
+        </span>
+        hizmeti için antrenör seçin
+    </p>
+</div>
 
-<div id="trainerList">
-    <!-- Sunucu tarafı fallback (JS kapalıysa) -->
-    @foreach (var a in Model)
+<div class="container">
+    <div class="row g-4" id="trainerList">
+        @foreach (var a in Model)
+
+        {
+            <div class="col-md-4">
+                <div class="card-custom h-100">
+                    @if (!string.IsNullOrEmpty(a.FotografUrl))
+                    {
+                        <img src="@a.FotografUrl" alt="@a.AdSoyad" class="card-img-top"
+                            style="height: 220px; object-fit: cover;">
+                    }
+                    else
+                    {
+                        <div class="card-img-top d-flex align-items-center justify-content-center"
+                            style="height: 220px; background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%);">
+                            <i class="fas fa-user fa-5x text-white opacity-50"></i>
+                        </div>
+                    }
+
+                    <div class="card-body text-center p-4">
+                        <h5 class="fw-bold mb-2">@a.AdSoyad</h5>
+                        <span class="badge badge-success-custom mb-3">
+                            <i class="fas fa-award me-1"></i>@a.Uzmanlik
+                        </span>
+
+                        <div class="text-muted small mb-3">
+                            <i class="fas fa-clock me-1"></i>
+                            @a.CalismaBaslangicSaati - @a.CalismaBitisSaati
+                        </div>
+
+                        <a href="/Randevu/SelectTime?hizmetId=@hizmet?.Id&antrenorId=@a.Id"
+                            class="btn btn-success-custom w-100">
+                            <i class="fas fa-calendar-check me-2"></i>Müsait Saatleri Gör
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Any())
+
     {
-        <div class="card p-3 my-2">
-            <h4>@a.AdSoyad (@a.Uzmanlik)</h4>
-            <a class="btn btn-primary" href="/Randevu/SelectTime?hizmetId=@hizmet?.Id&antrenorId=@a.Id">
-                Müsait Saatleri Gör
-            </a>
+        <div class="empty-state">
+            <i class="fas fa-user-slash"></i>
+            <h4>Antrenör Bulunamadı</h4>
+            <p>Bu hizmet için şu an uygun antrenör bulunmamaktadır.</p>
         </div>
     }
+
+    <div class="text-center mt-4">
+        <a href="/Randevu/SelectService" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Hizmet Seçimine Dön
+        </a>
+    </div>
 </div>
 
 @section Scripts {
@@ -33,18 +89,40 @@
                     if (!list) return;
 
                     if (!Array.isArray(data) || data.length === 0) {
-                        list.innerHTML = `<div class="alert alert-warning">Bu hizmet için uygun antrenör bulunamadı.</div>`;
+                        list.innerHTML = `
+                                <div class="col-12">
+                                    <div class="empty-state">
+                                        <i class="fas fa-user-slash"></i>
+                                        <h4>Antrenör Bulunamadı</h4>
+                                        <p>Bu hizmet için şu an uygun antrenör bulunmamaktadır.</p>
+                                    </div>
+                                </div>`;
                         return;
                     }
 
                     list.innerHTML = data.map(a => {
-                        const foto = a.fotografUrl ? `<img src="${a.fotografUrl}" alt="${a.adSoyad}" class="rounded-circle me-2" style="width: 44px; height: 44px; object-fit: cover;" />` : '';
+                        const foto = a.fotografUrl
+                            ? `<img src="${a.fotografUrl}" alt="${a.adSoyad}" class="card-img-top" style="height: 220px; object-fit: cover;">`
+                            : `<div class="card-img-top d-flex align-items-center justify-content-center" style="height: 220px; background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%);">
+                                    <i class="fas fa-user fa-5x text-white opacity-50"></i>
+                                   </div>`;
                         return `
-                            <div class="card p-3 my-2">
-                                <div class="d-flex align-items-center mb-2">${foto}<h4 class="mb-0">${a.adSoyad} <small class="text-muted">(${a.uzmanlik})</small></h4></div>
-                                <a class="btn btn-primary" href="/Randevu/SelectTime?hizmetId=${hizmetId}&antrenorId=${a.id}">Müsait Saatleri Gör</a>
-                            </div>
-                        `;
+                                <div class="col-md-4">
+                                    <div class="card-custom h-100">
+                                        ${foto}
+                                        <div class="card-body text-center p-4">
+                                            <h5 class="fw-bold mb-2">${a.adSoyad}</h5>
+                                            <span class="badge badge-success-custom mb-3">
+                                                <i class="fas fa-award me-1"></i>${a.uzmanlik}
+                                            </span>
+                                            <a href="/Randevu/SelectTime?hizmetId=${hizmetId}&antrenorId=${a.id}" 
+                                               class="btn btn-success-custom w-100">
+                                                <i class="fas fa-calendar-check me-2"></i>Müsait Saatleri Gör
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
                     }).join('');
                 })
                 .catch(() => {

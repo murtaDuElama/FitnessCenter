@@ -3,84 +3,141 @@
 @{
     ViewData["Title"] = "Saat Seç";
 
+
+
     int hizmetId = (int)ViewBag.HizmetId;
+
     int antrenorId = (int)ViewBag.AntrenorId;
 
-    // ViewBag boş gelirse patlamasın diye basit fallback
+
+
     string seciliTarih = ViewBag.SeciliTarih as string ?? DateTime.Today.ToString("yyyy-MM-dd");
+
     string seciliTarihLabel = ViewBag.SeciliTarihLabel as string ?? DateTime.Today.ToString("dd.MM.yyyy");
 }
 
-<h2 class="mb-4">Randevu Saati Seç</h2>
-
-<div class="mb-3">
-    <form asp-action="SelectTime" asp-controller="Randevu" method="get" class="row g-3 align-items-end">
-        <input type="hidden" name="hizmetId" value="@hizmetId" />
-        <input type="hidden" name="antrenorId" value="@antrenorId" />
-
-        <div class="col-sm-6 col-md-4">
-            <label class="form-label fw-bold">Randevu Tarihi</label>
-            <input type="date"
-                   name="tarih"
-                   class="form-control"
-                   min="@DateTime.Today.ToString("yyyy-MM-dd")"
-                   value="@seciliTarih"
-                   required />
-        </div>
-
-        <div class="col-sm-6 col-md-3">
-            <button type="submit" class="btn btn-outline-primary">
-                Tarihi Güncelle
-            </button>
-        </div>
-
-        <div class="col-12 col-md-5 text-md-end text-muted">
-            <small>Seçili gün: @seciliTarihLabel</small>
-        </div>
-    </form>
+<!-- PAGE HEADER -->
+<div class="page-header">
+    <h1><i class="fas fa-clock me-3"></i>Randevu Saati</h1>
+    <p>Uygun bir saat seçin ve randevunuzu tamamlayın</p>
 </div>
 
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">@TempData["Error"]</div>
-}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-card">
+                <!-- Tarih Seçimi -->
+                <div class="mb-4 pb-4 border-bottom">
+                    <h5 class="fw-bold mb-3">
+                        <i class="fas fa-calendar-alt text-primary me-2"></i>Tarih Seçimi
+                    </h5>
+                    <form asp-action="SelectTime" asp-controller="Randevu" method="get" class="row g-3 align-items-end">
+                        <input type="hidden" name="hizmetId" value="@hizmetId" />
+                        <input type="hidden" name="antrenorId" value="@antrenorId" />
 
-<form asp-action="Create"
-      asp-controller="Randevu"
-      method="post">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted">Randevu Tarihi</label>
+                            <input type="date" name="tarih" class="form-control form-control-custom"
+                                min="@DateTime.Today.ToString("yyyy-MM-dd")" value="@seciliTarih" required />
+                        </div>
 
-    @Html.AntiForgeryToken()
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary-custom w-100">
+                                <i class="fas fa-sync-alt me-1"></i>Güncelle
+                            </button>
+                        </div>
 
-    <!-- GİZLİ ALANLAR (ÇOK KRİTİK) -->
-    <input type="hidden" name="hizmetId" value="@hizmetId" />
-    <input type="hidden" name="antrenorId" value="@antrenorId" />
-    <input type="hidden" name="tarih" value="@seciliTarih" />
+                        <div class="col-md-3 text-end">
+                            <span class="badge badge-warm fs-6">
+                                <i class="fas fa-calendar me-1"></i>@seciliTarihLabel
+                            </span>
+                        </div>
+                    </form>
+                </div>
 
-    <div class="mb-3">
-        <label class="form-label fw-bold">Müsait Saatler</label>
+                @if (TempData["Error"] != null)
 
-        @if (Model != null && Model.Any())
-        {
-            <select name="saat" class="form-select" required>
-                <option value="">Saat Seçiniz</option>
-                @foreach (var saat in Model)
                 {
-                    <option value="@saat">@saat</option>
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                    </div>
                 }
-            </select>
-        }
-        else
-        {
-            <div class="alert alert-warning mb-0">
-                Seçili gün için uygun saat bulunamadı. Lütfen farklı bir tarih seçiniz.
+
+                <!-- Saat Seçimi -->
+                <form asp-action="Create" asp-controller="Randevu" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" name="hizmetId" value="@hizmetId" />
+                    <input type="hidden" name="antrenorId" value="@antrenorId" />
+                    <input type="hidden" name="tarih" value="@seciliTarih" />
+
+                    <h5 class="fw-bold mb-3">
+                        <i class="fas fa-clock text-success me-2"></i>Müsait Saatler
+                    </h5>
+
+                    @if (Model != null && Model.Any())
+
+                    {
+                        <div class="mb-4">
+                            <select name="saat" class="form-select form-control-custom" required id="saatSelect">
+                                <option value="">-- Saat Seçiniz --</option>
+                                @foreach (var saat in Model)
+
+                                {
+                                    <option value="@saat">@saat</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Görsel saat grid -->
+                        <div class="time-slot-grid mb-4">
+                            @foreach (var saat in Model)
+
+                            {
+                                <button type="button" class="time-slot-btn" data-saat="@saat">
+                                    <i class="fas fa-clock me-1"></i>@saat
+                                </button>
+                            }
+                        </div>
+
+                        <button type="submit" class="btn btn-success-custom w-100 py-3">
+                            <i class="fas fa-check-circle me-2"></i>Randevuyu Onayla
+                        </button>
+                    }
+
+                    else
+
+                    {
+                        <div class="empty-state">
+                            <i class="fas fa-calendar-times"></i>
+                            <h4>Müsait Saat Bulunamadı</h4>
+                            <p>Seçili gün için uygun saat bulunmamaktadır. Lütfen farklı bir tarih deneyin.</p>
+                        </div>
+                    }
+                </form>
+
+                <div class="text-center mt-4 pt-3 border-top">
+                    <a href="/Randevu/SelectTrainer?hizmetId=@hizmetId" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Antrenör Seçimine Dön
+                    </a>
+                </div>
             </div>
-        }
+        </div>
     </div>
+</div>
 
-    <button type="submit"
-            class="btn btn-success"
-            @(Model != null && Model.Any() ? "" : "disabled")>
-        Randevu Oluştur
-    </button>
-
-</form>
+@section Scripts {
+    <script>
+        // Saat butonlarına tıklama işlevi
+        document.querySelectorAll('.time-slot-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                // Tüm butonlardan active sınıfını kaldır
+                document.querySelectorAll('.time-slot-btn').forEach(b => b.classList.remove('active'));
+                // Tıklanan butona active ekle
+                this.classList.add('active');
+                // Select elementine değeri ata
+                document.getElementById('saatSelect').value = this.dataset.saat;
+            });
+        });
+    </script>
+}

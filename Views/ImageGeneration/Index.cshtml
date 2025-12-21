@@ -1,0 +1,196 @@
+@model FitnessCenter.Models.ViewModels.ImageGenerationViewModel
+
+@{
+    ViewData["Title"] = "AI Görsel Üretme";
+}
+
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4">
+            <i class="fas fa-image me-3 text-warning"></i>
+            AI Görsel Üretme
+        </h1>
+        <p class="lead text-muted">Egzersiz programınızı görselleştirin</p>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-magic me-2"></i>
+                        Egzersiz Görselinizi Oluşturun
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Generate" method="post" id="generateForm">
+                        <div class="row g-4">
+                            <!-- Egzersiz Seçimi -->
+                            <div class="col-md-4">
+                                <label asp-for="ExerciseName" class="form-label fw-bold">
+                                    <i class="fas fa-dumbbell me-1 text-primary"></i>
+                                    Egzersiz
+                                </label>
+                                <select asp-for="ExerciseName" class="form-select form-select-lg">
+                                    <option value="">-- Seçiniz --</option>
+                                    @foreach (var exercise in
+                                    FitnessCenter.Models.ViewModels.ImageGenerationViewModel.AvailableExercises)
+                                    {
+                                        <option value="@exercise">@exercise</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="ExerciseName" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Gün Sayısı -->
+                            <div class="col-md-4">
+                                <label asp-for="Days" class="form-label fw-bold">
+                                    <i class="fas fa-calendar-week me-1 text-success"></i>
+                                    Haftalık Gün
+                                </label>
+                                <input asp-for="Days" type="number" class="form-control form-control-lg" min="1"
+                                    max="7" />
+                                <span asp-validation-for="Days" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Tekrar Sayısı -->
+                            <div class="col-md-4">
+                                <label asp-for="Reps" class="form-label fw-bold">
+                                    <i class="fas fa-redo me-1 text-info"></i>
+                                    Tekrar Sayısı
+                                </label>
+                                <input asp-for="Reps" type="number" class="form-control form-control-lg" min="1"
+                                    max="100" />
+                                <span asp-validation-for="Reps" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mt-4">
+                            <i class="fas fa-lightbulb me-2"></i>
+                            <strong>İpucu:</strong> Seçtiğiniz egzersiz, gün ve tekrar bilgilerine göre AI size
+                            motivasyon verici bir görsel üretecek!
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-warning btn-lg" id="generateBtn">
+                                <i class="fas fa-wand-magic-sparkles me-2"></i>
+                                Görsel Üret
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Üretilen Görsel -->
+    @if (!string.IsNullOrEmpty(Model.GeneratedImageUrl))
+    {
+        <div class="row justify-content-center mt-5">
+            <div class="col-lg-10">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-check-circle me-2"></i>
+                            Üretilen Görsel
+                        </h5>
+                    </div>
+                    <div class="card-body p-4 text-center">
+                        <div class="mb-3">
+                            <span class="badge bg-primary fs-6 me-2">@Model.ExerciseName</span>
+                            <span class="badge bg-success fs-6 me-2">@Model.Days gün/hafta</span>
+                            <span class="badge bg-info fs-6">@Model.Reps tekrar</span>
+                        </div>
+
+                        <div class="image-container position-relative">
+                            <div id="imageLoader" class="position-absolute top-50 start-50 translate-middle">
+                                <div class="spinner-border text-warning" role="status" style="width: 3rem; height: 3rem;">
+                                    <span class="visually-hidden">Yükleniyor...</span>
+                                </div>
+                                <p class="mt-2 text-muted">Görsel yükleniyor...</p>
+                            </div>
+                            <img src="@Model.GeneratedImageUrl" alt="@Model.ExerciseName egzersizi görseli"
+                                class="img-fluid rounded shadow-lg" style="max-height: 600px; display: none;"
+                                id="generatedImage"
+                                onload="document.getElementById('imageLoader').style.display='none'; this.style.display='block';"
+                                onerror="document.getElementById('imageLoader').innerHTML='<i class=\'fas fa-exclamation-triangle text-warning fa-3x\'></i><p class=\'mt-2 text-danger\'>Görsel yüklenemedi. Lütfen tekrar deneyin.</p>';" />
+                        </div>
+
+                        <div class="mt-4">
+                            <a href="@Model.GeneratedImageUrl" target="_blank" class="btn btn-outline-primary me-2">
+                                <i class="fas fa-external-link-alt me-1"></i>
+                                Tam Boyut Görüntüle
+                            </a>
+                            <button type="button" class="btn btn-outline-secondary"
+                                onclick="window.location.href='/ImageGeneration/Index'">
+                                <i class="fas fa-redo me-1"></i>
+                                Yeni Görsel Üret
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .bg-gradient-warning {
+        background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+    }
+
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .image-container {
+        min-height: 300px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-warning {
+        background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+        border: none;
+        color: #333;
+        font-weight: bold;
+    }
+
+    .btn-warning:hover {
+        background: linear-gradient(135deg, #fda085 0%, #f6d365 100%);
+        color: #333;
+        transform: scale(1.02);
+    }
+
+    .form-select-lg,
+    .form-control-lg {
+        font-size: 1rem;
+        padding: 0.75rem 1rem;
+    }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('generateForm').addEventListener('submit', function () {
+            var btn = document.getElementById('generateBtn');
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Üretiliyor...';
+            btn.disabled = true;
+        });
+    </script>
+}
